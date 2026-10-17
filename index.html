@@ -147,7 +147,7 @@ body{
       <div class="row"><span class="dot" style="background:#7c3aed"></span><span class="nm">Wellness<small>เจ้าหน้าที่เดินนำส่ง</small></span><b id="s1">0</b></div><div class="sb"><i id="b1" style="background:#7c3aed"></i></div>
       <div class="row"><span class="dot" style="background:#f97316"></span><span class="nm">หอผู้ป่วย (Ward)<small>อาคารศูนย์การแพทย์ · ท่อลม</small></span><b id="s2">0</b></div><div class="sb"><i id="b2" style="background:#f97316"></i></div>
       <div class="row"><span class="dot" style="background:#ea580c"></span><span class="nm">หมวดงานบริหารสิ่งส่งตรวจฯ<small>อาคารศูนย์การแพทย์ ชั้น 1 · ท่อลม</small></span><b id="s3">0</b></div><div class="sb"><i id="b3" style="background:#ea580c"></i></div>
-      <div class="row"><span class="dot" style="background:#2563eb"></span><span class="nm">คลินิกพิเศษเฉพาะทาง<small>ดุลโสภาคย์ → ท่อลม → กิตติ ชั้น 1 → เดินส่ง</small></span><b id="s4">0</b></div><div class="sb"><i id="b4" style="background:#2563eb"></i></div>
+      <div class="row"><span class="dot" style="background:#2563eb"></span><span class="nm">คลินิกพิเศษเฉพาะทาง<small>ดุลโสภาคย์ → ท่อลม → กิตติ ชั้น 1 → ท่อลม</small></span><b id="s4">0</b></div><div class="sb"><i id="b4" style="background:#2563eb"></i></div>
     </div>
     <div class="card track">
       <div class="h">กำลังติดตาม <span class="tag">ตัวอย่าง</span></div>
@@ -166,7 +166,7 @@ body{
     <div class="top">
       <h1>เส้นทางผู้รับบริการและสิ่งส่งตรวจ</h1>
       <div class="hint">คลิกอาคารเพื่อขยาย · ลากเพื่อเลื่อน · ล้อเมาส์หรือถ่างนิ้วเพื่อซูม · ปุ่ม "ชั้น 1" ดูภายในอาคารกิตติวัฒนาชั้นล่าง · ดับเบิลคลิกหรือกด Esc เพื่อกลับภาพรวม</div>
-      <p>Wellness ชวนชูชาติ ชั้น 2 (เดินส่ง) · ศูนย์การแพทย์ (ท่อลม) · คลินิกพิเศษ ดุลโสภาคย์ ชั้น 1 (ท่อลม → กิตติ ชั้น 1 → เดินส่ง)<br>→ หมวดงานปฏิบัติการวินิจฉัยทางการแพทย์ · งานห้องปฏิบัติการเทคนิคการแพทย์ (อาคารกิตติวัฒนา ชั้น 3)</p>
+      <p>Wellness ชวนชูชาติ ชั้น 2 (เดินส่ง) · ศูนย์การแพทย์ (ท่อลม) · คลินิกพิเศษ ดุลโสภาคย์ ชั้น 1 (ท่อลม → กิตติ ชั้น 1 → ท่อลม)<br>→ หมวดงานปฏิบัติการวินิจฉัยทางการแพทย์ · งานห้องปฏิบัติการเทคนิคการแพทย์ (อาคารกิตติวัฒนา ชั้น 3)</p>
     </div>
     <svg id="scene" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="แผนผังจำลองเส้นทางผู้รับบริการและสิ่งส่งตรวจ">
       <defs>
@@ -463,6 +463,7 @@ function buildScene() {
   for (const cx of [4.1, 5.4, 6.7]) chair(cx, 1.5, 0, '#93c5fd');
   staff(8.2, 2.6, 0, 'phleb');
   F(11.6, 1.35, 3.2, .5, g => box(g, 11.6, 1.35, 0, 3.2, .5, .78, '#fed7aa')); rack(11.8, 1.45, .78);
+  F(14.55, 2.25, .5, .5, g => { box(g, 14.55, 2.25, 0, .5, .5, 1.1, '#93c5fd'); box(g, 14.55, 2.25, 1.1, .5, .5, .08, '#2563eb', { stroke: false }); });   // สถานีท่อลม → ชั้น 3
   staff(12.5, 2.7, 0, 'mt');
   F(15.4, 1.4, 1.8, .5, g => box(g, 15.4, 1.4, 0, 1.8, .5, .72, '#fde3cf')); staff(16.3, 2.6, 0, 'mt');
   analyzer(18, 1.5, 0, .9, .8, .9, '#64748b');
@@ -669,11 +670,16 @@ function buildScene() {
   const pipeD = PIPE_D.slice(0, 6).map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');   // ส่วนนอกอาคารกิตติ
   el('polyline', { points: pipeD, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
   el('polyline', { points: pipeD, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
+  const pipeK1 = [[14.8, 2.5, LAB_Z + .05], [14.8, 2.5, 6.9], [15.7, 2.5, 6.9], [15.7, 13.9, 6.9]].map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
+  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
+  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
 }
 const WARD_Z = [2.4, 4, 5.6];
 const PIPE_UP = [[29.35, 24.8, 6.9], [29.35, 23.6, 6.9], [15.7, 23.6, 6.9], [15.7, 13.9, 6.9], [13.95, 13.9, 6.9], [13.95, 13.9, LAB_Z + 1.15]];
 const PIPE_F1 = [[28.55, 26.25, 1.1], [29.35, 26.25, 1.1], [29.35, 24.8, 1.1], ...PIPE_UP];
 // ตึกดุลโสภาคย์ ชั้น 1 ห้องเจาะเลือด → ห้องเคมีคลินิก อาคารกิตติวัฒนา ชั้น 1
+// กิตติวัฒนา ชั้น 1 ห้องรับสิ่งส่งตรวจ → ขึ้นชั้น 3 ลงสถานีเดียวกับท่อจากอาคารศูนย์การแพทย์
+const PIPE_K1 = [[14.8, 2.5, 1.25], [14.8, 2.5, 6.9], [15.7, 2.5, 6.9], [15.7, 13.9, 6.9], [13.95, 13.9, 6.9], [13.95, 13.9, LAB_Z + 1.15]];
 const PIPE_D = [[7.275, 38.25, 1.15], [7.275, 38.25, 1.9], [8.7, 38.25, 1.9], [8.7, 23.2, 1.9], [11.9, 23.2, 1.9], [11.9, 21.9, 1.9], [11.9, 12.9, 1.9], [11.9, 12.9, 1.25]];
 
 /* ---------- labels ---------- */
@@ -710,7 +716,11 @@ function buildLabels() {
   const riser = PIPE_D.slice(5).map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
   el('polyline', { points: riser, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $labels);
   el('polyline', { points: riser, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-dasharray': '3 5', class: 'flow' }, $labels);
-  label(12.6, 12.9, 0, { n: '5ง', c: '#2563eb', th: 'ห้องเคมีคลินิก ชั้น 1', en: 'รับท่อลมจากดุลโสภาคย์ → เดินส่งขึ้นชั้น 3' }, 1.8);
+  const riserK1 = [[14.8, 2.5, 1.25], [14.8, 2.5, LAB_Z + .05]].map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
+  el('polyline', { points: riserK1, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linecap': 'round', opacity: .85 }, $labels);
+  el('polyline', { points: riserK1, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-dasharray': '3 5', class: 'flow' }, $labels);
+  label(12.6, 12.9, 0, { n: '5ง', c: '#2563eb', th: 'ห้องเคมีคลินิก ชั้น 1', en: 'รับท่อลมจากดุลโสภาคย์ → เดินส่งห้องรับสิ่งส่งตรวจ' }, 1.8);
+  label(13.2, 2.2, 0, { n: '5จ', c: '#2563eb', th: 'ห้องรับสิ่งส่งตรวจ ชั้น 1', en: 'ส่งท่อลมขึ้นชั้น 3 (สถานีเดียวกับศูนย์การแพทย์)' }, 1.7);
   $labels = root;
   label(...D(3, 9.9, 0), { n: '5ค', c: '#2563eb', th: 'หมวดงานบริหารสิ่งส่งตรวจและบริการผู้ป่วยนอก', en: 'ตึกดุลโสภาคย์ ชั้น 1 · คลินิกพิเศษ · ส่งท่อลมไปกิตติ ชั้น 1' }, 2.3);
   label(21, .8, LAB_Z + .9, { n: '5ก', lab: 1, th: 'เจ้าหน้าที่เดินนำส่งสิ่งส่งตรวจ', en: 'ชวนชูชาติ ชั้น 2 → กิตติวัฒนา ชั้น 3' }, 1.1);
@@ -728,7 +738,8 @@ const STEPS = {
   5: ['เจ้าหน้าที่เดินนำส่ง', 'จาก Wellness อาคารชวนชูชาติ ชั้น 2', 'l'],
   '5b': ['ส่งทางท่อลม', 'จาก Ward และหมวดงานบริหารสิ่งส่งตรวจฯ ชั้น 1 อาคารศูนย์การแพทย์', 'o'],
   '5c': ['ส่งท่อลมจากตึกดุลโสภาคย์', 'คลินิกพิเศษ: ห้องเจาะเลือด ชั้น 1 → ห้องเคมีคลินิก กิตติ ชั้น 1', 'b'],
-  '5d': ['เจ้าหน้าที่ถือขึ้นชั้น 3', 'ห้องเคมีคลินิก ชั้น 1 → โซนรับสิ่งส่งตรวจ ชั้น 3', 'b'],
+  '5d': ['เดินส่งห้องรับสิ่งส่งตรวจ ชั้น 1', 'ห้องเคมีคลินิก → ห้องรับสิ่งส่งตรวจส่วนหน้า (ชั้นเดียวกัน)', 'b'],
+  '5e': ['ส่งท่อลมขึ้นชั้น 3', 'ลงสถานีเดียวกับท่อจากศูนย์การแพทย์', 'b'],
   6: ['รับสิ่งส่งตรวจ & เตรียมตัวอย่าง', 'หมวดบริการศูนย์', 'l'],
   7: ['ตรวจวิเคราะห์อัตโนมัติ', 'โลหิตวิทยา เคมีคลินิก ภูมิคุ้มกัน', 'l'],
   8: ['ตรวจสอบ & รายงานผล', 'นักเทคนิคการแพทย์ยืนยันผลใน LIS', 'l'],
@@ -736,11 +747,11 @@ const STEPS = {
 };
 const STEP_ORDER = [
   ['p', 'ผู้รับบริการ · อาคารชวนชูชาติ ชั้น 2'], 1, 2, 3, 4,
-  ['l', 'นำส่งสิ่งส่งตรวจถึงห้องแล็บ'], 5, '5b', '5c', '5d',
+  ['l', 'นำส่งสิ่งส่งตรวจถึงห้องแล็บ'], 5, '5b', '5c', '5d', '5e',
   ['l', 'งานห้องปฏิบัติการ · อาคารกิตติวัฒนา ชั้น 3'], 6, 7, 8,
   ['p', 'กลับมาที่ผู้รับบริการ Wellness'], 9,
 ];
-const STEP_NUM = { 5: '5ก', '5b': '5ข', '5c': '5ค', '5d': '5ง' };
+const STEP_NUM = { 5: '5ก', '5b': '5ข', '5c': '5ค', '5d': '5ง', '5e': '5จ' };
 const SHIRTS = ['#f97316', '#ef4444', '#eab308', '#3b82f6', '#a855f7', '#ec4899', '#10b981', '#64748b', '#06b6d4'];
 const PANTS = ['#334155', '#1e3a8a', '#475569', '#78350f', '#1f2937'];
 
@@ -832,7 +843,9 @@ class Specimen extends Mover {
       ? [{ p: start },
          { p: D(4.6 + (s % 6) * .15, 12.75, .95), waitFor: 'd1', step: '5c', arrive: me => { me.atRackD = true; } },
          { p: [12.35 + (s % 5) * .2, 13, .95], wait: 1.5, step: '5d' },
-         { p: [12.35 + (s % 5) * .2, 13, .95], waitFor: 'd2', step: '5d', arrive: me => { me.atK1 = true; } }]
+         { p: [12.35 + (s % 5) * .2, 13, .95], waitFor: 'dR', step: '5d', arrive: me => { me.atK1 = true; } },
+         { p: [12.8 + (s % 5) * .3, 1.6, .95], wait: 1.5, step: '5e' },
+         { p: [14.8, 2.5, 1.3], waitFor: 'd2', step: '5e', arrive: me => { me.atK1R = true; } }]
       : [{ p: [13.95 + rnd(-.2, .2), 13.9 + rnd(-.2, .2), LAB_Z + 1.15] }];
     super([...head, ...labPath()], 3.2);
     this.pt = pt; this.srcPt = srcPt; this.kind = kind; this.tDraw = simT; this.alpha = 0;
@@ -880,10 +893,9 @@ const COURIER_OUT = [
   { p: [15.7, 10.5, LAB_Z] },
   { p: [14.1, 10.5, LAB_Z], wait: 1.4 },
 ];
-// เจ้าหน้าที่ห้องเคมีคลินิก ชั้น 1: ทางเดินกลาง → ทางเดินบน → ลิฟต์ → ชั้น 3 → โซนรับสิ่งส่งตรวจ
+// เจ้าหน้าที่ห้องเคมีคลินิก ชั้น 1: ทางเดินกลาง → ห้องรับสิ่งส่งตรวจส่วนหน้า (ชั้นเดียวกัน)
 const K1_COURIER_OUT = [
-  { p: [12.8, 13.4, 0] }, { p: [10.1, 13.4, 0] }, { p: [10.1, .6, 0] }, { p: [19.6, .6, 0] }, { p: [20.7, .8, 0] }, { p: [21, .8, 0] },
-  { p: [21, .8, LAB_Z], slow: .35 }, { p: [19.3, .8, LAB_Z] }, { p: [15.7, .8, LAB_Z] }, { p: [15.7, 2.4, LAB_Z] }, { p: [15.7, 10.5, LAB_Z] }, { p: [14.1, 10.5, LAB_Z], wait: 1.4 },
+  { p: [12.8, 13.4, 0] }, { p: [10.1, 13.4, 0] }, { p: [10.1, 2.4, 0] }, { p: [12.5, 2.4, 0], wait: 1.4 },
 ];
 
 class Courier {
@@ -916,7 +928,7 @@ class Courier {
 }
 const couriers = [
   new Courier({ out: COURIER_OUT, ready: s => s.atRack, pick: s => { s.atRack = false; }, drop: s => { s.delivered = true; stats.received++; stats.recvW++; } }),
-  new Courier({ out: K1_COURIER_OUT, shirt: '#3b82f6', ready: s => s.atK1, pick: s => { s.atK1 = false; }, drop: s => { s.d2 = true; stats.received++; stats.recvOPD++; } }),
+  new Courier({ out: K1_COURIER_OUT, shirt: '#3b82f6', ready: s => s.atK1, pick: s => { s.atK1 = false; }, drop: s => { s.dR = true; } }),
 ];
 
 /* ผู้ป่วยคลินิกพิเศษ ตึกดุลโสภาคย์ ชั้น 1: รับคิว → รอ → เจาะเลือด → กลับ */
@@ -934,20 +946,20 @@ class OPDPatient extends Mover {
     stats.visitsOPD++;
   }
 }
-let opdIn = 1, dIdle = 0;
+let opdIn = 1, dIdle = 0, k1Idle = 0;
 
 /* กระสวยท่อลมจากอาคารศูนย์การแพทย์ */
 class Capsule {
   constructor(src, load = null) {
     this.src = src; this.load = load;
     const zw = pick(WARD_Z);
-    this.pts = src === 'dul' ? PIPE_D : src === 'ward' ? [[29.35, 24.8, zw], ...PIPE_UP] : PIPE_F1;
+    this.pts = src === 'k1' ? PIPE_K1 : src === 'dul' ? PIPE_D : src === 'ward' ? [[29.35, 24.8, zw], ...PIPE_UP] : PIPE_F1;
     this.back = src === 'ward' ? [25, 25.6, zw + .8] : [23.4, 28.6, 1];
     this.n = load ? load.length : 1 + Math.floor(Math.random() * 3);
-    if (load) load.forEach((s, i) => { s.carrier = this; s.cslot = i; s.atRackD = false; s.hidden = true; });
+    if (load) load.forEach((s, i) => { s.carrier = this; s.cslot = i; s.atRackD = false; s.atK1R = false; s.hidden = true; });
     this.i = 0; this.pos = [...this.pts[0]]; this.wait = 1.6; this.step = '5b';
     this.g = el('g', {}, $fx);
-    this.g.innerHTML = `<circle r="11" fill="url(#glowO)"/><rect x="-6.5" y="-3.6" width="13" height="7.2" rx="3.6" fill="${{ ward: '#f97316', f1: '#ea580c', dul: '#2563eb' }[src]}" stroke="#fff" stroke-width="1.3"/>`;
+    this.g.innerHTML = `<circle r="11" fill="url(#glowO)"/><rect x="-6.5" y="-3.6" width="13" height="7.2" rx="3.6" fill="${{ ward: '#f97316', f1: '#ea580c', dul: '#2563eb', k1: '#2563eb' }[src]}" stroke="#fff" stroke-width="1.3"/>`;
   }
   update(dt) {
     if (this.wait > 0) { this.wait -= dt; return; }
@@ -960,7 +972,8 @@ class Capsule {
     if (this.i >= this.pts.length - 1 && !this.gone) {
       this.gone = true; this.g.remove();
       if (this.load) {
-        for (const sp of this.load) { sp.carrier = null; sp.hidden = false; sp.pos = [...this.pos]; sp.d1 = true; }
+        for (const sp of this.load) { sp.carrier = null; sp.hidden = false; sp.pos = [...this.pos]; if (this.src === 'k1') sp.d2 = true; else sp.d1 = true; }
+        if (this.src === 'k1') { stats.received += this.n; stats.recvOPD += this.n; }
       } else {
         stats.received += this.n;
         for (let k = 0; k < this.n; k++) ents.push(new Specimen(null, this.back));
@@ -1038,6 +1051,9 @@ function tick(dt) {
   dIdle += dt;
   const dReady = ents.filter(e => e instanceof Specimen && e.atRackD && !e.carrier);
   if (dReady.length && (dIdle > 3.5 || dReady.length >= 3)) { caps.push(new Capsule('dul', dReady)); dIdle = 0; }
+  k1Idle += dt;
+  const kReady = ents.filter(e => e instanceof Specimen && e.atK1R && !e.carrier);
+  if (kReady.length && (k1Idle > 3.5 || kReady.length >= 3)) { caps.push(new Capsule('k1', kReady)); k1Idle = 0; }
   capIn -= dt;
   if (capIn <= 0) { caps.push(new Capsule(Math.random() < .6 ? 'ward' : 'f1')); capIn = rnd(4.5, 8.5); }
   for (const c of caps) c.update(dt);
@@ -1138,7 +1154,7 @@ function updateUI() {
   const srcN = [stats.recvW, stats.recvWard, stats.recvF1, stats.recvOPD], srcMax = Math.max(1, ...srcN);
   srcN.forEach((n, i) => { document.getElementById('s' + (i + 1)).textContent = n; document.getElementById('b' + (i + 1)).style.width = (n / srcMax * 100) + '%'; });
   const cnt = {};
-  for (const e of ents) { if (e.fading) continue; const s = e.step; if (typeof s === 'number') cnt[s] = (cnt[s] || 0) + 1; }
+  for (const e of ents) { if (e.fading) continue; const s = e.step; if (s != null && s in STEPS) cnt[s] = (cnt[s] || 0) + 1; }
   for (const p of pulses) if (!p.gone && (p instanceof Ring || (p.result && !p.fin))) cnt[8] = (cnt[8] || 0) + 1;
   cnt['5b'] = caps.filter(c => c.src === 'ward' || c.src === 'f1').length;
   const fs = stepOf(featured);
