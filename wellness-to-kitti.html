@@ -86,7 +86,7 @@ body{
 .top{position:absolute;top:14px;left:0;right:0;text-align:center;pointer-events:none;padding:0 200px}
 .top h1{margin:0;font-size:21px;font-weight:700;letter-spacing:-.2px}
 .top p{margin:3px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
-#scene{position:absolute;inset:118px 8px 8px 8px;width:calc(100% - 16px);height:calc(100% - 126px)}
+#scene{position:absolute;inset:118px 8px 104px 8px;width:calc(100% - 16px);height:calc(100% - 222px)}
 .ctrl{position:absolute;right:16px;top:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 .btns{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
 .btns button{white-space:nowrap;font:inherit;font-size:12px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:4px 9px;border-radius:7px;cursor:pointer}
@@ -111,7 +111,8 @@ body{
 .zoom .ic{min-width:28px}
 
 .top{padding:0 16px;text-align:left}
-.ctrl{top:auto;bottom:12px}
+.ctrl{top:auto;bottom:10px;left:16px;right:16px;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px}
+.ctrl .legend{flex-direction:row;flex-wrap:wrap;gap:4px 12px;padding:6px 10px}
 @media (max-width:900px){
   body{overflow:auto}
   .app{grid-template-columns:1fr;height:auto}
