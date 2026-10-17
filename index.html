@@ -86,10 +86,10 @@ body{
 .top{position:absolute;top:14px;left:0;right:0;text-align:center;pointer-events:none;padding:0 200px}
 .top h1{margin:0;font-size:21px;font-weight:700;letter-spacing:-.2px}
 .top p{margin:3px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
-#scene{position:absolute;inset:80px 8px 8px 8px;width:calc(100% - 16px);height:calc(100% - 88px)}
+#scene{position:absolute;inset:118px 8px 8px 8px;width:calc(100% - 16px);height:calc(100% - 126px)}
 .ctrl{position:absolute;right:16px;top:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-.btns{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
-.btns button{font:inherit;font-size:12px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:4px 9px;border-radius:7px;cursor:pointer}
+.btns{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
+.btns button{white-space:nowrap;font:inherit;font-size:12px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:4px 9px;border-radius:7px;cursor:pointer}
 .btns button.on{background:var(--ink);color:var(--on-ink)}
 .btns button:focus-visible{outline:2px solid var(--lab);outline-offset:2px}
 .legend{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--muted);padding:9px 11px}
@@ -101,8 +101,17 @@ body{
 @keyframes dash{to{stroke-dashoffset:-24}}
 .flow{animation:dash 1.2s linear infinite}
 @media (prefers-reduced-motion: reduce){ .bob,.flow{animation:none} }
+#scene{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+#scene.dragging{cursor:grabbing}
+#dyn,#fx,#labels,#tags{pointer-events:none}
+.hit{fill:var(--lab);fill-opacity:0;stroke:none;cursor:zoom-in;transition:fill-opacity .2s}
+.hit:hover{fill-opacity:.07;stroke:var(--lab);stroke-width:1.5;stroke-dasharray:6 4}
+.hit.cur{fill-opacity:0;stroke:none;cursor:inherit}
+.hint{font-size:11.5px;color:var(--muted);margin-top:2px}
+.zoom .ic{min-width:28px}
 
-@media (max-width:1400px){ .top{padding:0 16px;text-align:left} .ctrl{top:auto;bottom:12px} }
+.top{padding:0 16px;text-align:left}
+.ctrl{top:auto;bottom:12px}
 @media (max-width:900px){
   body{overflow:auto}
   .app{grid-template-columns:1fr;height:auto}
@@ -112,7 +121,8 @@ body{
   .legend{flex-direction:row;flex-wrap:wrap}
   .top{position:static;padding:14px 0 0;text-align:center}
   .top h1{font-size:17px}
-  #scene{inset:auto;position:relative;width:100%;height:52vh;min-height:300px;display:block}
+  #scene{inset:auto;position:relative;width:100%;height:52vh;min-height:300px;display:block;touch-action:pan-y}
+  #scene.zoomed{touch-action:none}
 }
 </style>
 </head>
@@ -151,6 +161,7 @@ body{
   <main class="stage">
     <div class="top">
       <h1>เส้นทางผู้รับบริการและสิ่งส่งตรวจ</h1>
+      <div class="hint">คลิกอาคารเพื่อขยาย · ลากเพื่อเลื่อน · ล้อเมาส์หรือถ่างนิ้วเพื่อซูม · ดับเบิลคลิกหรือกด Esc เพื่อกลับภาพรวม</div>
       <p>Wellness (อาคารชวนชูชาติ ชั้น 2) · เดินส่ง &nbsp;+&nbsp; อาคารศูนย์การแพทย์ (Ward, ชั้น 1) · ท่อลม<br>→ หมวดงานปฏิบัติการวินิจฉัยทางการแพทย์ · งานห้องปฏิบัติการเทคนิคการแพทย์ (อาคารกิตติวัฒนา ชั้น 3)</p>
     </div>
     <svg id="scene" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="แผนผังจำลองเส้นทางผู้รับบริการและสิ่งส่งตรวจ">
@@ -162,6 +173,7 @@ body{
       <g id="world"><g id="static"></g><g id="dyn"></g><g id="fx"></g><g id="labels"></g><g id="tags"></g></g>
     </svg>
     <div class="ctrl">
+      <div class="btns zoom" id="zoom" role="group" aria-label="ซูมดูเป็นส่วน"></div>
       <div class="btns" id="speed">
         <button data-a="pause">⏸ หยุด</button>
         <button data-s="1" class="on">1×</button>
@@ -971,16 +983,140 @@ document.getElementById('speed').addEventListener('click', e => {
 });
 
 /* ---------- boot ---------- */
+/* ---------- zoom: zones, wheel, drag, pinch ---------- */
+const svg = document.getElementById('scene');
+let VB = null, FULL = null, zoomAnim = 0, focusZone = 'all';
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// พิกัดโลกของแต่ละส่วน: frame = กรอบที่จะซูมไป, hit = กล่องที่คลิกได้ (ถึงระดับพื้นชั้นที่สนใจ)
+const ZONES = [
+  { id: 'all', name: 'ภาพรวม' },
+  { id: 'well', name: 'Wellness ชั้น 2', frame: [24.5, 42.5, -.5, 15, 0, W_Z + 3], hit: [25, 42, 0, 14.5, 0, W_Z] },
+  { id: 'route', name: 'ทางเดินนำส่ง', frame: [15, 26.5, -.8, 12, 0, LAB_Z + 2.6], hit: [20.2, 25, 0, 7.6, 0, LAB_Z + .9] },
+  { id: 'lab', name: 'แล็บ ชั้น 3', frame: [0, 20, 0, 22, 0, LAB_Z + 3.3], hit: [0, 20, 0, 21.9, 0, LAB_Z] },
+  ...('5b' in STEPS ? [{ id: 'med', name: 'ศูนย์การแพทย์', frame: [20.3, 30, 23.5, 31.5, 0, 8.3], hit: [20.7, 29.9, 24, 30.3, 0, 6.6] }] : []),
+];
+function zoneBox(f) {
+  const xs = [], ys = [];
+  for (const x of [f[0], f[1]]) for (const y of [f[2], f[3]]) for (const z of [f[4], f[5]]) { const q = iso(x, y, z); xs.push(q[0]); ys.push(q[1]); }
+  const x = Math.min(...xs), y = Math.min(...ys), w = Math.max(...xs) - x, h = Math.max(...ys) - y, pad = Math.max(w, h) * .05;
+  return { x: x - pad, y: y - pad, w: w + pad * 2, h: h + pad * 2 };
+}
+function setVB(v) {
+  VB = v;
+  svg.setAttribute('viewBox', `${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}`);
+  svg.classList.toggle('zoomed', v.w < FULL.w * .97);
+}
+function animateTo(t) {
+  cancelAnimationFrame(zoomAnim);
+  if (reduceMotion) { setVB(t); return; }
+  const from = { ...VB }, t0 = performance.now(), ms = 650;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+    setVB({ x: from.x + (t.x - from.x) * e, y: from.y + (t.y - from.y) * e, w: from.w + (t.w - from.w) * e, h: from.h + (t.h - from.h) * e });
+    if (k < 1) zoomAnim = requestAnimationFrame(step);
+  };
+  zoomAnim = requestAnimationFrame(step);
+}
+function setFocus(id) {
+  focusZone = id;
+  document.querySelectorAll('#zoom [data-z]').forEach(b => b.classList.toggle('on', b.dataset.z === id));
+  document.querySelectorAll('.hit').forEach(h => h.classList.toggle('cur', h.dataset.z === id));
+}
+function goZone(id) {
+  const z = ZONES.find(z => z.id === id);
+  animateTo(z.frame ? zoneBox(z.frame) : FULL);
+  setFocus(id);
+}
 function fit() {
   const bb = document.getElementById('world').getBBox();
   const pad = 12;
-  document.getElementById('scene').setAttribute('viewBox', `${bb.x - pad} ${bb.y - pad} ${bb.width + pad * 2} ${bb.height + pad * 2}`);
+  FULL = { x: bb.x - pad, y: bb.y - pad, w: bb.width + pad * 2, h: bb.height + pad * 2 };
+  setVB(FULL);
 }
+function buildZoomUI() {
+  const bar = document.getElementById('zoom');
+  for (const z of ZONES) {
+    const b = document.createElement('button'); b.dataset.z = z.id; b.textContent = z.name; bar.appendChild(b);
+  }
+  for (const [a, t, lbl] of [['in', '+', 'ซูมเข้า'], ['out', '−', 'ซูมออก']]) {
+    const b = document.createElement('button'); b.dataset.k = a; b.textContent = t; b.className = 'ic'; b.setAttribute('aria-label', lbl); bar.appendChild(b);
+  }
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.z) goZone(b.dataset.z);
+    else { const f = b.dataset.k === 'in' ? .7 : 1 / .7; animateTo(scaled({ x: VB.x + VB.w / 2, y: VB.y + VB.h / 2 }, f, VB)); setFocus(null); }
+  });
+  // พื้นที่คลิกได้ของแต่ละอาคาร
+  const hits = el('g', { id: 'hits' });
+  document.getElementById('world').insertBefore(hits, $dyn);
+  for (const z of ZONES) {
+    if (!z.hit) continue;
+    const [x0, x1, y0, y1, z0, z1] = z.hit;
+    const poly = el('polygon', { class: 'hit', 'data-z': z.id, points: P([[x0, y0, z1], [x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y1, z1]]) }, hits);
+    el('title', {}, poly).textContent = 'ขยายดู ' + z.name;
+  }
+  hits.addEventListener('click', e => {
+    if (dragMoved) return;
+    const h = e.target.closest('.hit'); if (h && h.dataset.z !== focusZone) goZone(h.dataset.z);
+  });
+  setFocus('all');
+}
+function scaled(c, f, base) {
+  const w = Math.min(FULL.w * 1.15, Math.max(FULL.w / 7, base.w * f)), k = w / base.w;
+  return { x: c.x - (c.x - base.x) * k, y: c.y - (c.y - base.y) * k, w, h: base.h * k };
+}
+function toSvg(inv, cx, cy) { const p = new DOMPoint(cx, cy).matrixTransform(inv); return { x: p.x, y: p.y }; }
+
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  cancelAnimationFrame(zoomAnim);
+  const c = toSvg(svg.getScreenCTM().inverse(), e.clientX, e.clientY);
+  setVB(scaled(c, Math.exp(e.deltaY * .0015), VB)); setFocus(null);
+}, { passive: false });
+
+const ptrs = new Map();
+let gesture = null, dragMoved = false;
+function startGesture() {
+  const pts = [...ptrs.values()];
+  const mid = { x: pts.reduce((a, p) => a + p.x, 0) / pts.length, y: pts.reduce((a, p) => a + p.y, 0) / pts.length };
+  const inv = svg.getScreenCTM().inverse();
+  gesture = { inv, vb: { ...VB }, anchor: toSvg(inv, mid.x, mid.y), dist: pts.length > 1 ? Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) : 0, start: mid };
+}
+svg.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'touch' && !svg.classList.contains('zoomed') && matchMedia('(max-width:900px)').matches && ptrs.size === 0 && !e.isPrimary) return;
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (ptrs.size === 1) dragMoved = false;
+  cancelAnimationFrame(zoomAnim);
+  startGesture();
+});
+addEventListener('pointermove', e => {
+  if (!ptrs.has(e.pointerId) || !gesture) return;
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const pts = [...ptrs.values()];
+  const mid = { x: pts.reduce((a, p) => a + p.x, 0) / pts.length, y: pts.reduce((a, p) => a + p.y, 0) / pts.length };
+  if (!dragMoved && Math.hypot(mid.x - gesture.start.x, mid.y - gesture.start.y) < 6 && pts.length === 1) return;
+  // หน้าจอมือถือที่ยังไม่ได้ซูม: ปล่อยให้นิ้วเดียวเลื่อนหน้าเว็บตามปกติ
+  if (pts.length === 1 && e.pointerType === 'touch' && !svg.classList.contains('zoomed') && matchMedia('(max-width:900px)').matches) return;
+  dragMoved = true; svg.classList.add('dragging'); setFocus(null);
+  const g = gesture, k = pts.length > 1 && g.dist ? g.dist / Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) : 1;
+  const w = Math.min(FULL.w * 1.15, Math.max(FULL.w / 7, g.vb.w * k)), s = w / g.vb.w;
+  const cur = toSvg(g.inv, mid.x, mid.y);
+  setVB({ x: g.anchor.x - (cur.x - g.vb.x) * s, y: g.anchor.y - (cur.y - g.vb.y) * s, w, h: g.vb.h * s });
+});
+function endPtr(e) {
+  if (!ptrs.delete(e.pointerId)) return;
+  if (ptrs.size) startGesture(); else { gesture = null; svg.classList.remove('dragging'); }
+}
+addEventListener('pointerup', endPtr);
+addEventListener('pointercancel', endPtr);
+svg.addEventListener('dblclick', () => goZone('all'));
+addEventListener('keydown', e => { if (e.key === 'Escape') goZone('all'); });
 buildScene();
 const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
 fontsReady.then(() => {
   buildLabels();
   fit();
+  buildZoomUI();
   let last = performance.now(), uiAcc = 0;
   function frame(now) {
     let dt = Math.min(.05, (now - last) / 1000); last = now;
