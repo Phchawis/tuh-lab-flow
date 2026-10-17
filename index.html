@@ -13,19 +13,19 @@
 :root{
   --bg:#eaf0f6; --bg-hi:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#dde5ee;
   --card:rgba(255,255,255,.88); --surface:#ffffff; --chip:#f1f5f9; --track:#eef2f7; --shadow:rgba(15,23,42,.05);
-  --pt:#0d9488; --pt-soft:#ccfbf1; --lab:#7c3aed; --lab-soft:#ede9fe; --or:#ea580c; --or-soft:#ffedd5;
+  --pt:#0d9488; --pt-soft:#ccfbf1; --lab:#7c3aed; --lab-soft:#ede9fe; --or:#ea580c; --or-soft:#ffedd5; --bl:#2563eb; --bl-soft:#dbeafe;
   --feat:#f59e0b; --feat-soft:#fef3c7; --me-bg:#fffbeb; --me-ring:#fcd34d; --on-ink:#ffffff;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0e1420; --bg-hi:#1a2333; --ink:#e5e9f0; --muted:#94a3b8; --line:#2a3546;
   --card:rgba(22,30,44,.9); --surface:#182131; --chip:#263244; --track:#263244; --shadow:rgba(0,0,0,.3);
-  --pt:#2dd4bf; --pt-soft:#123d3a; --lab:#a78bfa; --lab-soft:#2e1f55; --or:#fb923c; --or-soft:#3d1f0c;
+  --pt:#2dd4bf; --pt-soft:#123d3a; --lab:#a78bfa; --lab-soft:#2e1f55; --or:#fb923c; --or-soft:#3d1f0c; --bl:#60a5fa; --bl-soft:#172554;
   --feat:#fbbf24; --feat-soft:#3a2f12; --me-bg:#2c2514; --me-ring:#a16207; --on-ink:#0e1420; color-scheme:dark;
 } }
 :root[data-theme="dark"]{
   --bg:#0e1420; --bg-hi:#1a2333; --ink:#e5e9f0; --muted:#94a3b8; --line:#2a3546;
   --card:rgba(22,30,44,.9); --surface:#182131; --chip:#263244; --track:#263244; --shadow:rgba(0,0,0,.3);
-  --pt:#2dd4bf; --pt-soft:#123d3a; --lab:#a78bfa; --lab-soft:#2e1f55; --or:#fb923c; --or-soft:#3d1f0c;
+  --pt:#2dd4bf; --pt-soft:#123d3a; --lab:#a78bfa; --lab-soft:#2e1f55; --or:#fb923c; --or-soft:#3d1f0c; --bl:#60a5fa; --bl-soft:#172554;
   --feat:#fbbf24; --feat-soft:#3a2f12; --me-bg:#2c2514; --me-ring:#a16207; --on-ink:#0e1420; color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -72,6 +72,8 @@ body{
 .p{--c:var(--pt);--soft:var(--pt-soft)}
 .l{--c:var(--lab);--soft:var(--lab-soft)}
 .o{--c:var(--or);--soft:var(--or-soft)}
+.b{--c:var(--bl);--soft:var(--bl-soft)}
+#kitti-shell,.fade{transition:opacity .45s}
 .src .row{display:flex;align-items:center;gap:8px;font-size:12px;margin-top:7px}
 .src .row:first-of-type{margin-top:0}
 .src .nm{flex:1;line-height:1.3}
@@ -144,6 +146,7 @@ body{
       <div class="row"><span class="dot" style="background:#7c3aed"></span><span class="nm">Wellness<small>เจ้าหน้าที่เดินนำส่ง</small></span><b id="s1">0</b></div><div class="sb"><i id="b1" style="background:#7c3aed"></i></div>
       <div class="row"><span class="dot" style="background:#f97316"></span><span class="nm">หอผู้ป่วย (Ward)<small>อาคารศูนย์การแพทย์ · ท่อลม</small></span><b id="s2">0</b></div><div class="sb"><i id="b2" style="background:#f97316"></i></div>
       <div class="row"><span class="dot" style="background:#ea580c"></span><span class="nm">หมวดงานบริหารสิ่งส่งตรวจฯ<small>อาคารศูนย์การแพทย์ ชั้น 1 · ท่อลม</small></span><b id="s3">0</b></div><div class="sb"><i id="b3" style="background:#ea580c"></i></div>
+      <div class="row"><span class="dot" style="background:#2563eb"></span><span class="nm">คลินิกพิเศษเฉพาะทาง<small>ดุลโสภาคย์ ชั้น 1 → กิตติ ชั้น 1 → ท่อลม</small></span><b id="s4">0</b></div><div class="sb"><i id="b4" style="background:#2563eb"></i></div>
     </div>
     <div class="card track">
       <div class="h">กำลังติดตาม <span class="tag">ตัวอย่าง</span></div>
@@ -156,17 +159,18 @@ body{
       <div class="h">ขั้นตอนบริการ <span class="tag">จำนวนขณะนี้</span></div>
       <ul class="steps" id="steps"></ul>
     </div>
-    <div class="note">ตัวเลขทั้งหมดเป็นข้อมูลจำลอง · ตำแหน่งอาคารอ้างอิงผังโรงพยาบาล · ชั้น 3 อาคารกิตติวัฒนาอ้างอิงแผนผังระยะที่ 3 · ระยะห่างของอาคารศูนย์การแพทย์ย่อให้อยู่ในภาพเดียว · ตำแหน่งสถานีท่อลมและเครื่องมือภายในห้องเป็นภาพประกอบ</div>
+    <div class="note">ตัวเลขทั้งหมดเป็นข้อมูลจำลอง · ตำแหน่งอาคารอ้างอิงผังโรงพยาบาล · ชั้น 3 อาคารกิตติวัฒนาอ้างอิงแผนผังระยะที่ 3 · ตึกดุลโสภาคย์และกิตติวัฒนา ชั้น 1 อ้างอิงแผนผังที่ได้รับ (ย่อสัดส่วน) · ระยะห่างของอาคารศูนย์การแพทย์ย่อให้อยู่ในภาพเดียว · ตำแหน่งสถานีท่อลมและเครื่องมือภายในห้องเป็นภาพประกอบ</div>
   </aside>
   <main class="stage">
     <div class="top">
       <h1>เส้นทางผู้รับบริการและสิ่งส่งตรวจ</h1>
-      <div class="hint">คลิกอาคารเพื่อขยาย · ลากเพื่อเลื่อน · ล้อเมาส์หรือถ่างนิ้วเพื่อซูม · ดับเบิลคลิกหรือกด Esc เพื่อกลับภาพรวม</div>
-      <p>Wellness (อาคารชวนชูชาติ ชั้น 2) · เดินส่ง &nbsp;+&nbsp; อาคารศูนย์การแพทย์ (Ward, ชั้น 1) · ท่อลม<br>→ หมวดงานปฏิบัติการวินิจฉัยทางการแพทย์ · งานห้องปฏิบัติการเทคนิคการแพทย์ (อาคารกิตติวัฒนา ชั้น 3)</p>
+      <div class="hint">คลิกอาคารเพื่อขยาย · ลากเพื่อเลื่อน · ล้อเมาส์หรือถ่างนิ้วเพื่อซูม · ปุ่ม "กิตติ ชั้น 1" ดูภายในชั้นล่าง · ดับเบิลคลิกหรือกด Esc เพื่อกลับภาพรวม</div>
+      <p>Wellness ชวนชูชาติ ชั้น 2 (เดินส่ง) · ศูนย์การแพทย์ (ท่อลม) · คลินิกพิเศษ ดุลโสภาคย์ ชั้น 1 → กิตติ ชั้น 1 (ท่อลม)<br>→ หมวดงานปฏิบัติการวินิจฉัยทางการแพทย์ · งานห้องปฏิบัติการเทคนิคการแพทย์ (อาคารกิตติวัฒนา ชั้น 3)</p>
     </div>
     <svg id="scene" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="แผนผังจำลองเส้นทางผู้รับบริการและสิ่งส่งตรวจ">
       <defs>
         <radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".55"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
+        <radialGradient id="glowB"><stop offset="0" stop-color="#60a5fa" stop-opacity=".6"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
         <radialGradient id="glowO"><stop offset="0" stop-color="#fb923c" stop-opacity=".6"/><stop offset="1" stop-color="#fb923c" stop-opacity="0"/></radialGradient>
         <radialGradient id="glowG"><stop offset="0" stop-color="#4ade80" stop-opacity=".7"/><stop offset="1" stop-color="#4ade80" stop-opacity="0"/></radialGradient>
       </defs>
@@ -184,6 +188,7 @@ body{
         <span><svg width="14" height="14"><circle cx="7" cy="7" r="5" fill="#f97316"/></svg>ผู้รับบริการ</span>
         <span><svg width="14" height="14"><rect x="1" y="4" width="12" height="7" rx="2" fill="#fef3c7" stroke="#d97706"/></svg>เจ้าหน้าที่เดินนำส่ง</span>
         <span><svg width="14" height="14"><rect x="5" y="1" width="4" height="12" rx="2" fill="#dc2626"/><rect x="4" y="0" width="6" height="3" rx="1" fill="#7c3aed"/></svg>หลอดจาก Wellness</span>
+        <span><svg width="14" height="14"><rect x="5" y="1" width="4" height="12" rx="2" fill="#dc2626"/><rect x="4" y="0" width="6" height="3" rx="1" fill="#2563eb"/></svg>หลอดจากคลินิกพิเศษ</span>
         <span><svg width="14" height="14"><rect x="1" y="4" width="12" height="6" rx="3" fill="#f97316"/></svg>กระสวยท่อลม (ศูนย์การแพทย์)</span>
         <span><svg width="14" height="14"><circle cx="7" cy="7" r="4" fill="#22c55e"/></svg>ผลตรวจส่งถึงแพทย์</span>
       </div>
@@ -199,6 +204,8 @@ const LAB_Z = 5;                    // อาคารกิตติวัฒ�
 const W_Z = 2.5;                    // อาคารชวนชูชาติ ชั้น 2
 const W_OFF = [25.5, -10.5, W_Z];   // ผังห้อง Wellness (พิกัดภายใน) → พิกัดโลก
 const Ww = (x, y, z = 0) => [x + W_OFF[0], y + W_OFF[1], z + W_OFF[2]];
+const DX = 1.5, DY = 25.5;           // ตึกดุลโสภาคย์ ชั้น 1 (พิกัดภายใน) → พิกัดโลก
+const D = (x, y, z = 0) => [x + DX, y + DY, z];
 
 // OFF shifts everything drawn while building the static scene; it is [0,0,0] for moving things
 let OFF = [0, 0, 0];
@@ -222,10 +229,10 @@ function shade(hex, f) {
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = a => a[Math.floor(Math.random() * a.length)];
 
-const $static = document.getElementById('static');
+let $static = document.getElementById('static');
 const $dyn = document.getElementById('dyn');
 const $fx = document.getElementById('fx');
-const $labels = document.getElementById('labels');
+let $labels = document.getElementById('labels');
 const $tags = document.getElementById('tags');
 
 /* ---------- primitives ---------- */
@@ -402,14 +409,81 @@ const BLOOD_CHAIRS = [11.8, 13.3, 14.8];   // ตำแหน่งเดิม�
 function buildScene() {
   /* ground between buildings */
   box($static, -1.5, -1.5, -.3, 45, 34, .3, '#e8edf3', { stroke: false });
+  box($static, -1.5, 22, -.3, 19.5, 22.6, .3, '#e8edf3', { stroke: false });
   const path = '#d6dee8';
   flat($static, 21.5, .3, 0, .9, 7, path);
   flat($static, 20.4, .3, 0, 1.6, .9, path);
   flat($static, 21.5, 6.3, 0, 2.3, .9, path);
-  [[23, 10.5], [22.4, 14], [4, 23.9], [12, 24.2], [32, 17.4], [38.5, 17.2], [19.2, 28.5], [31, 30.5]].forEach(([x, y]) => tree(x, y));
+  flat($static, 12.3, 21.9, 0, 1.3, 3.8, path);   // ทางเชื่อมดุลโสภาคย์ ↔ กิตติวัฒนา
+  [[23, 10.5], [22.4, 14], [3, 23.6], [16.6, 23.4], [32, 17.4], [38.5, 17.2], [19.2, 28.5], [31, 30.5], [17.2, 35], [-.6, 41]].forEach(([x, y]) => tree(x, y));
   flush($static);
-  floorText(10, 23.6, 0, 'อาคารกิตติวัฒนา', 18, '#94a3b8');
+  floorText(6, 23.3, 0, 'อาคารกิตติวัฒนา', 18, '#94a3b8');
   floorText(33.5, 15.9, 0, 'อาคารชวนชูชาติ', 18, '#94a3b8');
+
+  /* อาคารกิตติวัฒนา ชั้น 1 — ตามแผนผังงานห้องปฏิบัติการเทคนิคการแพทย์ ชั้น 1 (ย่อสัดส่วน, เห็นเมื่อเลือก "กิตติ ชั้น 1") */
+  box($static, 0, 0, -.3, 20, 21.9, .3, '#ffffff', { f1: .93, f2: .86 });
+  const K1_ROOMS = [
+    { x: 0, y: 0, w: 20, d: 1.2, col: '#e6e9ee', open: 1, name: 'ทางเดิน → ทางออกนอกอาคาร', fs: 8.5 },
+    { x: 19.2, y: 1.2, w: .8, d: 18.1, col: '#e6e9ee', open: 1 },
+    { x: 0, y: 1.2, w: 3.6, d: 1.9, col: '#e6e9ee', open: 1 },
+    { x: 3.6, y: 1.2, w: 5.3, d: 1.9, col: '#fde68a', name: 'ห้องเจาะเลือด', fs: 9 },
+    { x: 8.9, y: 1.2, w: 2.4, d: 18.1, col: '#f7e3e8', open: 1, name: 'ทางเดินกลาง', dir: 'y', fs: 9 },
+    { x: 11.3, y: 1.2, w: 3.8, d: 1.9, col: '#fed7aa', name: 'ห้องรับสิ่งส่งตรวจ', fs: 8 },
+    { x: 15.1, y: 1.2, w: 2.7, d: 1.9, col: '#f8c6a1', name: 'Out LAB', fs: 8 },
+    { x: 17.8, y: 1.2, w: 1.4, d: 3.3, col: '#e0e4f2', name: 'POCT', dir: 'y', fs: 7 },
+    { x: 0, y: 3.1, w: 3.6, d: 1.4, col: '#e2f9b8', name: 'ห้องพัก', fs: 8 },
+    { x: 3.6, y: 3.1, w: 5.3, d: 1.4, col: '#bbf7c0', name: 'เวชสารสนเทศห้องปฏิบัติการ', fs: 7 },
+    { x: 11.3, y: 3.1, w: 1.3, d: 2.6, col: '#d6e8cc', name: 'เปลี่ยนชุด', dir: 'y', fs: 6.5 },
+    { x: 12.6, y: 3.1, w: 2.5, d: 2.6, col: '#b5e08f', name: 'ห้องนอนเวร', fs: 7 },
+    { x: 15.1, y: 3.1, w: 2.7, d: 1.3, col: '#b5e08f', name: 'ห้องนอนเวร', fs: 6.5 },
+    { x: 15.1, y: 4.4, w: 2.7, d: 1.3, col: '#b5e08f', name: 'ห้องนอนเวร', fs: 6.5 },
+    { x: 0, y: 4.5, w: 8.9, d: 6.1, col: '#e6fb9a', name: 'ห้องภูมิคุ้มกันวิทยา', fs: 11 },
+    { x: 17.8, y: 4.5, w: 1.4, d: 4.3, col: '#fef08a', name: 'จุลทรรศน์ & ปรสิต', dir: 'y', fs: 7 },
+    { x: 11.3, y: 5.7, w: 6.5, d: 3.1, col: '#f9b4ef', name: 'ห้องโลหิตวิทยา', fs: 10 },
+    { x: 11.3, y: 8.8, w: 7.9, d: 4.7, col: '#a5dcf7', name: 'ห้องเคมีคลินิก', fs: 11 },
+    { x: 0, y: 10.6, w: 8.9, d: 2.9, col: '#9fd8b0', name: 'ห้องอาหาร', fs: 10 },
+    { x: 0, y: 13.5, w: 8.9, d: 3.5, col: '#d4d8de', name: 'ห้องคลังพัสดุ', fs: 10 },
+    { x: 11.3, y: 13.5, w: 4, d: 1.9, col: '#fdba74', name: 'คลังน้ำยา', fs: 8 },
+    { x: 15.3, y: 13.5, w: 2.5, d: 1.9, col: '#fcdcc0', name: 'งานวิจัย', fs: 8 },
+    { x: 17.8, y: 13.5, w: 1.4, d: 1.9, col: '#a5dcf7' },
+    { x: 0, y: 17, w: 8.9, d: 2.3, col: '#fde68a', name: 'ห้องล้างอุปกรณ์', fs: 9 },
+    { x: 11.3, y: 15.4, w: 3.6, d: 3.9, col: '#ecbcbc', name: 'ห้องธุรการ', fs: 9 },
+    { x: 14.9, y: 15.4, w: 2.9, d: 3.9, col: '#c9b8fb', name: 'ห้องหัวหน้า', fs: 9 },
+    { x: 17.8, y: 15.4, w: 1.4, d: 3.9, col: '#e6e9ee', open: 1 },
+    { x: 0, y: 19.3, w: 5.6, d: 1, col: '#fecdd3', name: 'Stat Molecular', fs: 7.5 },
+    { x: 5.6, y: 19.3, w: 5.7, d: 1, col: '#fbefe4', open: 1 },
+    { x: 0, y: 20.3, w: 1.9, d: 1.6, col: '#a7f3c0', name: 'Autoclave', dir: 'y', fs: 6 },
+    { x: 1.9, y: 20.3, w: 3.7, d: 1.6, col: '#fecdd3', name: 'PCR', fs: 8 },
+    { x: 5.6, y: 20.3, w: 5.7, d: 1.6, col: '#fda4af', name: 'ห้องชีวโมเลกุล', fs: 8.5 },
+  ];
+  rooms(K1_ROOMS, 0);
+  for (const r of K1_ROOMS) if (r.name) floorText(r.x + r.w / 2, r.y + r.d / 2, .04, r.name, r.fs || 9, '#475569', r.dir || 'x');
+  for (const cx of [4.1, 5.4, 6.7]) chair(cx, 1.5, 0, '#93c5fd');
+  staff(8.2, 2.6, 0, 'phleb');
+  F(11.6, 1.35, 3.2, .5, g => box(g, 11.6, 1.35, 0, 3.2, .5, .78, '#fed7aa')); rack(11.8, 1.45, .78);
+  F(14.55, 2.25, .5, .5, g => { box(g, 14.55, 2.25, 0, .5, .5, 1.1, '#93c5fd'); box(g, 14.55, 2.25, 1.1, .5, .5, .08, '#2563eb', { stroke: false }); });   // สถานีท่อลม ชั้น 1
+  staff(12.5, 2.7, 0, 'mt');
+  F(15.4, 1.4, 1.8, .5, g => box(g, 15.4, 1.4, 0, 1.8, .5, .72, '#fde3cf')); staff(16.3, 2.6, 0, 'mt');
+  analyzer(18, 1.5, 0, .9, .8, .9, '#64748b');
+  for (const dx of [4, 6.4]) { desk(dx, 3.25, 0, 1.6, .5); monitor(dx + .4, 3.3, .72); }
+  analyzer(.4, 5, 0, 2, 1.1, 1.3, '#84cc16'); analyzer(2.8, 5, 0, 2, 1.1, 1.3, '#84cc16'); analyzer(5.2, 5, 0, 2.2, 1.1, 1.3, '#65a30d');
+  F(.6, 8.4, 7, .7, g => box(g, .6, 8.4, 0, 7, .7, .75, '#e2e8f0')); staff(3.6, 7.2, 0, 'mt'); staff(6.8, 9.7, 0, 'mt');
+  analyzer(11.7, 6, 0, 2, 1.1, 1.3, '#d946ef'); analyzer(14, 6, 0, 2, 1.1, 1.3, '#d946ef'); staff(15.6, 8.1, 0, 'mt');
+  F(18.05, 5, .9, 2, g => box(g, 18.05, 5, 0, .9, 2, .72, '#fde68a'));
+  analyzer(11.7, 9.1, 0, 2.4, 1.3, 1.5, '#0ea5e9'); analyzer(14.4, 9.1, 0, 2.4, 1.3, 1.5, '#0ea5e9'); analyzer(17, 9.1, 0, 1.9, 1.3, 1.5, '#0284c7');
+  staff(13.2, 11.6, 0, 'mt'); staff(16.6, 11.8, 0, 'mt');
+  for (const dx of [1, 4.8]) F(dx, 11.4, 2.6, 1.1, g => box(g, dx, 11.4, 0, 2.6, 1.1, .7, '#fef3c7'));
+  for (const dx of [.4, 2.6, 4.8, 7]) F(dx, 13.8, 1.5, .6, g => box(g, dx, 13.8, 0, 1.5, .6, 1.8, '#cbd5e1'));
+  fridge(11.6, 13.7, 0); fridge(12.7, 13.7, 0); fridge(13.8, 13.7, 0);
+  F(15.6, 13.7, 1.9, .6, g => box(g, 15.6, 13.7, 0, 1.9, .6, .75, '#e2e8f0'));
+  F(1, 17.3, 6, .6, g => box(g, 1, 17.3, 0, 6, .6, .8, '#e2e8f0'));
+  desk(11.8, 16, 0, 2.4, .8); monitor(12.4, 16.05, .72); desk(15.3, 16, 0, 2, .8, '#ddd6fe'); monitor(15.9, 16.05, .72);
+  for (const [dx, w] of [[2.3, 1.6], [6.2, 2], [8.6, 2]]) F(dx, 20.6, w, .7, g => box(g, dx, 20.6, 0, w, .7, 1.2, '#f1f5f9'));
+  F(12.8, 3.5, 1.5, .8, g => { box(g, 12.8, 3.5, 0, 1.5, .8, .35, '#ffffff'); box(g, 12.8, 3.5, .35, .5, .8, .12, '#bfdbfe'); });
+  flush($static);
+
+  const STATIC_ROOT = $static;
+  $static = el('g', { id: 'kitti-shell' }, STATIC_ROOT);   // ผนังชั้น 1–2 + ชั้น 3: จางลงเมื่อดูชั้น 1
 
   /* อาคารกิตติวัฒนา: ชั้น 1–2 โปร่ง, ชั้น 3 เต็ม */
   const KITTI = [[0, 0, 20, 3.2], [14.5, 3.2, 5.5, 5.3], [0, 8.5, 20, 13.4]];   // ไม่รวมพื้นที่นอกอาคาร
@@ -445,6 +519,54 @@ function buildScene() {
   for (const yy of [3, 7, 11, 15]) { F(17.3, yy, 2, .8, g => box(g, 17.3, yy, z, 2, .8, .72, '#e2e8f0')); staff(18.3, yy + 1.3, z, 'gen'); }
   /* ลิฟต์ปลายทางเดินภายนอก */
   flush($static);
+  $static = STATIC_ROOT;
+
+  /* ตึกดุลโสภาคย์ ชั้น 1 — หมวดงานบริหารสิ่งส่งตรวจและบริการผู้ป่วยนอก (ย่อสัดส่วนจากแผนผัง) */
+  withOff([DX, DY, 0], () => {
+    box($static, -.2, -.2, -.3, 14.3, 17.1, .3, '#ffffff', { f1: .93, f2: .86 });
+    const D_ROOMS = [
+      { x: 0, y: 0, w: 2.65, d: 1.4, col: '#bae6fd', name: 'ห้องน้ำชาย', fs: 7 },
+      { x: 2.65, y: 0, w: 2.95, d: 1.4, col: '#bae6fd', name: 'ห้องน้ำหญิง', fs: 7 },
+      { x: 0, y: 1.4, w: 5.6, d: .6, col: '#e6e9ee', open: 1 },
+      { x: 5.6, y: 0, w: 2.4, d: 2, col: '#d6d3d1', name: 'งานการเงิน', fs: 7.5 },
+      { x: 8, y: 0, w: 5.9, d: 5.3, col: '#eceff3', open: 1, name: 'โถงจุดรับคิว', fs: 9 },
+      { x: 0, y: 2, w: 4.9, d: 4.25, col: '#86efac', name: 'ห้องตรวจวิเคราะห์', fs: 8.5 },
+      { x: 4.9, y: 2, w: 1.1, d: 4.25, col: '#e6e9ee', open: 1 },
+      { x: 6, y: 2, w: 2, d: 3.3, col: '#fde68a', name: 'เจาะเลือดรถเข็น', dir: 'y', fs: 7 },
+      { x: 6, y: 5.3, w: 7.9, d: 4.6, col: '#e6e9ee', open: 1, name: 'พื้นที่รอคอยเจาะเลือด', fs: 8.5 },
+      { x: 0, y: 6.25, w: 6, d: 7.3, col: '#f2c4c1', name: 'ห้องเจาะเลือด', fs: 11 },
+      { x: 0, y: 13.55, w: 6, d: 1.55, col: '#fca5a5', name: 'ห้องเจาะเลือดเด็ก', fs: 8 },
+      { x: 0, y: 15.1, w: 2.9, d: 1.6, col: '#5eead4', name: 'ห้องน้ำเจ้าหน้าที่', fs: 6 },
+      { x: 2.9, y: 15.1, w: 3.1, d: 1.6, col: '#f9a8d4', name: 'ห้องอาหาร', fs: 7.5 },
+      { x: 6, y: 9.9, w: 2.3, d: 6.8, col: '#e6e9ee', open: 1, name: 'ทางหนีไฟ', dir: 'y', fs: 8 },
+      { x: 8.3, y: 9.9, w: 5.6, d: 1.4, col: '#93c5fd', name: 'ห้องรับลงทะเบียน', fs: 8 },
+      { x: 8.3, y: 11.3, w: 5.6, d: 1.9, col: '#fde68a', name: 'ห้องเจาะเลือดกลุ่มพิเศษ', fs: 8 },
+      { x: 8.3, y: 13.2, w: 5.6, d: 1.9, col: '#a5f3fc', name: 'ห้องคลังพัสดุ', fs: 8 },
+      { x: 8.3, y: 15.1, w: 5.6, d: 1.6, col: '#ddd6fe', name: 'ห้องธุรการ', fs: 8 },
+    ];
+    rooms(D_ROOMS, 0);
+    for (const r of D_ROOMS) if (r.name) floorText(r.x + r.w / 2, r.y + r.d / 2, .04, r.name, r.fs || 9, '#475569', r.dir || 'x');
+    F(8.4, .25, .5, .35, g => box(g, 8.4, .25, 0, .5, .35, 1.1, '#ef4444'));
+    F(9.1, .2, 1.8, .3, g => { box(g, 9.1, .2, 0, 1.8, .3, 1.3, '#f8fafc'); faceScreen(g, 9.2, .5, .6, 1.6, .55, '#bfdbfe'); });
+    desk(5.9, .3, 0, 1.8, .6, '#e7e5e4'); staff(6.8, 1.35, 0, 'staff');
+    analyzer(.4, 2.4, 0, 1.8, 1, 1.2, '#16a34a'); analyzer(2.5, 2.4, 0, 1.8, 1, 1.2, '#16a34a'); staff(2.4, 4.7, 0, 'mt');
+    chair(6.5, 2.6, 0, '#93c5fd'); staff(7.4, 3.8, 0, 'phleb');
+    for (const by of [6, 7.2, 8.4]) { bench(6.5, by, 0, 3.1, '#d9bf96'); bench(12.1, by, 0, 1.6, '#d9bf96'); }
+    for (const cx of [.8, 2.4, 4]) for (const cy of [7.2, 10.2]) {
+      F(cx, cy, .8, .8, g => { box(g, cx, cy, 0, .8, .8, .42, '#93c5fd'); box(g, cx, cy, .42, .8, .14, .6, '#93c5fd'); });
+      staff(cx + 1.1, cy + .35, 0, 'phleb');
+    }
+    F(4.5, 12.55, 1.3, .45, g => box(g, 4.5, 12.55, 0, 1.3, .45, .72, '#fde68a'));   // จุดรอนำส่ง
+    for (const cx of [1, 2.4]) chair(cx, 13.8, 0, '#fda4af');
+    desk(8.6, 10.1, 0, 3.6, .5, '#bfdbfe'); monitor(9.2, 10.15, .72); monitor(10.8, 10.15, .72); staff(12.9, 10.7, 0, 'staff');
+    for (const cx of [8.8, 10.4]) chair(cx, 11.7, 0, '#fcd34d');
+    staff(12.4, 12.5, 0, 'phleb');
+    for (const dx of [8.6, 10.3, 12]) F(dx, 13.4, 1.4, .5, g => box(g, dx, 13.4, 0, 1.4, .5, 1.6, '#cbd5e1'));
+    desk(8.8, 15.4, 0, 2, .7, '#ddd6fe'); monitor(9.4, 15.45, .72);
+    F(3.4, 15.5, 2, .8, g => box(g, 3.4, 15.5, 0, 2, .8, .7, '#fef3c7'));
+    flush($static);
+  });
+  floorText(DX + 7, DY + 18.4, 0, 'ตึกดุลโสภาคย์', 18, '#94a3b8');
   box($static, 20.3, .1, 0, 1.4, 1.4, LAB_Z + .9, '#bae6fd', { op: .4 });
 
   /* อาคารชวนชูชาติ: ชั้น 1 โปร่ง, ชั้น 2 Wellness */
@@ -540,10 +662,15 @@ function buildScene() {
   const pipe = PIPE_F1.map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
   el('polyline', { points: pipe, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
   el('polyline', { points: pipe, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
+  const pipeK1 = [[14.8, 2.5, LAB_Z + .05], [14.8, 2.5, 6.9], [15.7, 2.5, 6.9], [15.7, 13.9, 6.9]].map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
+  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
+  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
 }
 const WARD_Z = [2.4, 4, 5.6];
 const PIPE_UP = [[29.35, 24.8, 6.9], [29.35, 23.6, 6.9], [15.7, 23.6, 6.9], [15.7, 13.9, 6.9], [13.95, 13.9, 6.9], [13.95, 13.9, LAB_Z + 1.15]];
 const PIPE_F1 = [[28.55, 26.25, 1.1], [29.35, 26.25, 1.1], [29.35, 24.8, 1.1], ...PIPE_UP];
+// กิตติวัฒนา ชั้น 1 ห้องรับสิ่งส่งตรวจ → ขึ้นชั้น 3 ลงสถานีเดียวกับท่อจากอาคารศูนย์การแพทย์
+const PIPE_K1 = [[14.8, 2.5, 1.25], [14.8, 2.5, 6.9], [15.7, 2.5, 6.9], [15.7, 13.9, 6.9], [13.95, 13.9, 6.9], [13.95, 13.9, LAB_Z + 1.15]];
 
 /* ---------- labels ---------- */
 function label(x, y, z, r, lift = 2.3) {
@@ -571,8 +698,17 @@ function label(x, y, z, r, lift = 2.3) {
   }
 }
 function buildLabels() {
+  const root = $labels;
+  $labels = el('g', { id: 'labels-k3', class: 'fade' }, root);
   label(9.4, 11.6, LAB_Z, { n: '6–8', lab: 1, th: 'หมวดบริการศูนย์', en: 'รับสิ่งส่งตรวจ · ตรวจวิเคราะห์ · รายงานผล' }, 3);
   label(9.4, 16.6, LAB_Z, { n: 0, th: 'หมวดตรวจวินิจฉัยขั้นสูง', en: 'Advanced diagnostics' }, 2.2);
+  $labels = el('g', { id: 'labels-k1', class: 'fade', style: 'opacity:0' }, root);
+  const riser = [[14.8, 2.5, 1.25], [14.8, 2.5, LAB_Z + .05]].map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
+  el('polyline', { points: riser, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linecap': 'round', opacity: .85 }, $labels);
+  el('polyline', { points: riser, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-dasharray': '3 5', class: 'flow' }, $labels);
+  label(13.2, 2.2, 0, { n: '5ง', c: '#2563eb', th: 'ห้องรับสิ่งส่งตรวจ ชั้น 1', en: 'ส่งต่อขึ้นชั้น 3 ทางท่อลม' }, 1.7);
+  $labels = root;
+  label(...D(3, 9.9, 0), { n: '5ค', c: '#2563eb', th: 'หมวดงานบริหารสิ่งส่งตรวจและบริการผู้ป่วยนอก', en: 'ตึกดุลโสภาคย์ ชั้น 1 · เจาะเลือดคลินิกพิเศษเฉพาะทาง' }, 2.3);
   label(21, .8, LAB_Z + .9, { n: '5ก', lab: 1, th: 'เจ้าหน้าที่เดินนำส่งสิ่งส่งตรวจ', en: 'ชวนชูชาติ ชั้น 2 → กิตติวัฒนา ชั้น 3' }, 1.1);
   label(24, 24.8, 7.2, { n: 0, c: '#ea580c', th: 'หอผู้ป่วย (Ward)', en: 'ส่งตรวจทางท่อลมจากทุกชั้น' }, .7);
   label(21.4, 30, 0, { n: '5ข', c: '#ea580c', th: 'หมวดงานบริหารสิ่งส่งตรวจ', en: 'และบริการศูนย์การแพทย์ · ชั้น 1' }, 1.1);
@@ -587,6 +723,8 @@ const STEPS = {
   4: ['เจาะเลือด', 'ยืนยันตัวตน ติดฉลากหลอด', 'p'],
   5: ['เจ้าหน้าที่เดินนำส่ง', 'จาก Wellness อาคารชวนชูชาติ ชั้น 2', 'l'],
   '5b': ['ส่งทางท่อลม', 'จาก Ward และหมวดงานบริหารสิ่งส่งตรวจฯ ชั้น 1 อาคารศูนย์การแพทย์', 'o'],
+  '5c': ['เดินนำส่งจากตึกดุลโสภาคย์', 'คลินิกพิเศษ: เจาะเลือดชั้น 1 → กิตติวัฒนา ชั้น 1', 'b'],
+  '5d': ['รับที่กิตติ ชั้น 1 แล้วส่งท่อลมขึ้นชั้น 3', 'ลงสถานีเดียวกับท่อจากศูนย์การแพทย์', 'b'],
   6: ['รับสิ่งส่งตรวจ & เตรียมตัวอย่าง', 'หมวดบริการศูนย์', 'l'],
   7: ['ตรวจวิเคราะห์อัตโนมัติ', 'โลหิตวิทยา เคมีคลินิก ภูมิคุ้มกัน', 'l'],
   8: ['ตรวจสอบ & รายงานผล', 'นักเทคนิคการแพทย์ยืนยันผลใน LIS', 'l'],
@@ -594,16 +732,16 @@ const STEPS = {
 };
 const STEP_ORDER = [
   ['p', 'ผู้รับบริการ · อาคารชวนชูชาติ ชั้น 2'], 1, 2, 3, 4,
-  ['l', 'นำส่งสิ่งส่งตรวจถึงห้องแล็บ'], 5, '5b',
+  ['l', 'นำส่งสิ่งส่งตรวจถึงห้องแล็บ'], 5, '5b', '5c', '5d',
   ['l', 'งานห้องปฏิบัติการ · อาคารกิตติวัฒนา ชั้น 3'], 6, 7, 8,
   ['p', 'กลับมาที่ผู้รับบริการ Wellness'], 9,
 ];
-const STEP_NUM = { 5: '5ก', '5b': '5ข' };
+const STEP_NUM = { 5: '5ก', '5b': '5ข', '5c': '5ค', '5d': '5ง' };
 const SHIRTS = ['#f97316', '#ef4444', '#eab308', '#3b82f6', '#a855f7', '#ec4899', '#10b981', '#64748b', '#06b6d4'];
 const PANTS = ['#334155', '#1e3a8a', '#475569', '#78350f', '#1f2937'];
 
 let simT = 0, speed = 1, paused = false, spawnIn = 0.5, nextHN = 1, slot = 0;
-const stats = { visits: 0, received: 0, reported: 0, reportedW: 0, tatSum: 0, recvW: 0, recvWard: 0, recvF1: 0 };
+const stats = { visits: 0, received: 0, reported: 0, reportedW: 0, tatSum: 0, recvW: 0, recvWard: 0, recvF1: 0, recvOPD: 0, visitsOPD: 0 };
 const ents = [], pulses = [];
 
 class Mover {
@@ -680,22 +818,28 @@ const labPath = () => [
 ];
 class Specimen extends Mover {
   // pt: ผู้รับบริการ Wellness (เดินส่ง) หรือ null เมื่อมาทางท่อลมจากอาคารศูนย์การแพทย์ (srcPt = จุดส่งผลกลับ)
-  constructor(pt, srcPt = null) {
+  // kind: 'well' เดินส่งจาก Wellness, 'tube' ท่อลมศูนย์การแพทย์, 'opd' คลินิกพิเศษ ดุลโสภาคย์ → กิตติ ชั้น 1 → ท่อลม
+  constructor(pt, srcPt = null, kind = pt ? 'well' : 'tube', start = null) {
     const s = slot++ % 7;
-    const head = pt
+    const head = kind === 'well'
       ? [{ p: [pt.pos[0], pt.pos[1] - .3, pt.pos[2] + .9] },
          { p: Ww(.5 + s * .3, 16.45, .95), waitFor: 'delivered', step: 5, arrive: me => { me.atRack = true; } }]
+      : kind === 'opd'
+      ? [{ p: start },
+         { p: D(4.6 + (s % 6) * .18, 12.75, .95), waitFor: 'd1', step: '5c', arrive: me => { me.atRackD = true; } },
+         { p: [12.8 + (s % 5) * .3, 1.6, .95], wait: 2, step: '5d' },
+         { p: [14.8, 2.5, 1.3], waitFor: 'd2', step: '5d', arrive: me => { me.atK1 = true; } }]
       : [{ p: [13.95 + rnd(-.2, .2), 13.9 + rnd(-.2, .2), LAB_Z + 1.15] }];
     super([...head, ...labPath()], 3.2);
-    this.pt = pt; this.srcPt = srcPt; this.tDraw = simT; this.alpha = 0;
+    this.pt = pt; this.srcPt = srcPt; this.kind = kind; this.tDraw = simT; this.alpha = 0;
     this.g = el('g', {}, $dyn);
     const cap = pick(['#7c3aed', '#7c3aed', '#dc2626', '#f59e0b']);
-    this.g.innerHTML = `<circle r="11" cy="-5" fill="url(#${pt ? 'glow' : 'glowO'})"/><g transform="translate(0,-5)"><rect x="-2.4" y="-7" width="4.8" height="13" rx="2.4" fill="#fff" stroke="${pt ? '#64748b' : '#ea580c'}" stroke-width=".8"/><rect x="-1.7" y="-1" width="3.4" height="6.2" rx="1.6" fill="#dc2626"/><rect x="-2.9" y="-9.5" width="5.8" height="3.4" rx="1.2" fill="${cap}"/></g>`;
+    this.g.innerHTML = `<circle r="11" cy="-5" fill="url(#${{ well: 'glow', tube: 'glowO', opd: 'glowB' }[kind]})"/><g transform="translate(0,-5)"><rect x="-2.4" y="-7" width="4.8" height="13" rx="2.4" fill="#fff" stroke="${{ well: '#64748b', tube: '#ea580c', opd: '#2563eb' }[kind]}" stroke-width=".8"/><rect x="-1.7" y="-1" width="3.4" height="6.2" rx="1.6" fill="#dc2626"/><rect x="-2.9" y="-9.5" width="5.8" height="3.4" rx="1.2" fill="${cap}"/></g>`;
   }
   update(dt) {
     if (this.carrier) {
       const c = this.carrier.pos;
-      this.pos = [c[0] - .3 + this.cslot * .17, c[1] - .1, c[2] + 1.05];
+      this.pos = this.carrier instanceof Capsule ? [...c] : [c[0] - .3 + this.cslot * .17, c[1] - .1, c[2] + 1.05];
       return;
     }
     super.update(dt);
@@ -732,17 +876,21 @@ const COURIER_OUT = [
   { p: [15.7, 10.5, LAB_Z] },
   { p: [14.1, 10.5, LAB_Z], wait: 1.4 },
 ];
-const COURIER_BACK = [...COURIER_OUT].reverse().map((w, i, a) => ({ p: w.p, slow: (a[i - 1] || {}).slow }));
-COURIER_BACK[COURIER_BACK.length - 1].wait = .1;
+// เจ้าหน้าที่ดุลโสภาคย์: จุดรอนำส่งในห้องเจาะเลือด → ทางเชื่อม → ทางออกล่างกิตติ ชั้น 1 → ทางเดินกลาง → ห้องรับสิ่งส่งตรวจ
+const D_COURIER_OUT = [
+  { p: D(5.4, 13.25, 0) }, { p: D(6.6, 13.25, 0) }, { p: D(6.6, 9.6, 0) }, { p: D(11, 9.6, 0) }, { p: D(11, 5.2, 0) }, { p: D(11, 2.5, 0) }, { p: D(11.4, -.3, 0) },
+  { p: [12.9, 23.4, 0] }, { p: [12.6, 20.6, 0] }, { p: [10.8, 19.9, 0] }, { p: [10.1, 19.2, 0] }, { p: [10.1, 2.4, 0] }, { p: [12.4, 2.4, 0], wait: 1.4 },
+];
 
 class Courier {
-  constructor() {
-    this.pos = [...COURIER_OUT[0].p]; this.phase = 0; this.seed = 1; this.idle = 0; this.load = []; this.trip = null;
-    personEntity(this, { ...ROLE.courier, skin: SKIN[1], hair: HAIR[0] });
+  constructor(o) {
+    Object.assign(this, o);
+    this.back = o.out.slice().reverse().map((w, i, a) => ({ p: w.p, slow: (a[i - 1] || {}).slow }));
+    this.pos = [...o.out[0].p]; this.phase = 0; this.seed = Math.random() * 9; this.idle = 0; this.load = []; this.trip = null;
+    personEntity(this, { ...ROLE.courier, shirt: o.shirt || ROLE.courier.shirt, skin: SKIN[1], hair: HAIR[0] });
   }
   get moving() { return !!this.trip && this.trip.moving; }
   go(wps, done) { this.trip = new Mover(wps.map(w => ({ ...w })), 2.5); this.trip.pos = [...this.pos]; this.done = done; }
-  get carrying() { return this.load.length > 0; }
   update(dt) {
     if (this.trip) {
       this.trip.update(dt); this.pos = this.trip.pos; this.phase = this.trip.phase;
@@ -750,31 +898,52 @@ class Courier {
       return;
     }
     this.idle += dt;
-    const ready = ents.filter(e => e instanceof Specimen && e.atRack && !e.carrier && !e.delivered);
+    const ready = ents.filter(e => e instanceof Specimen && !e.carrier && this.ready(e));
     if (ready.length && (this.idle > 6 || ready.length >= 3)) {
-      ready.forEach((s, i) => { s.carrier = this; s.cslot = i; s.atRack = false; });
+      ready.forEach((s, i) => { s.carrier = this; s.cslot = i; this.pick(s); });
       this.load = ready;
-      this.go(COURIER_OUT, () => {
-        for (const s of this.load) { s.carrier = null; s.delivered = true; stats.received++; stats.recvW++; }
+      this.go(this.out, () => {
+        for (const s of this.load) { s.carrier = null; this.drop(s); }
         this.load = [];
-        this.go(COURIER_BACK, () => { this.idle = 0; });
+        this.go(this.back, () => { this.idle = 0; });
       });
     }
   }
 }
-const courier = new Courier();
+const couriers = [
+  new Courier({ out: COURIER_OUT, ready: s => s.atRack, pick: s => { s.atRack = false; }, drop: s => { s.delivered = true; stats.received++; stats.recvW++; } }),
+  new Courier({ out: D_COURIER_OUT, shirt: '#3b82f6', ready: s => s.atRackD, pick: s => { s.atRackD = false; }, drop: s => { s.d1 = true; } }),
+];
+
+/* ผู้ป่วยคลินิกพิเศษ ตึกดุลโสภาคย์ ชั้น 1: รับคิว → รอ → เจาะเลือด → กลับ */
+class OPDPatient extends Mover {
+  constructor() {
+    const cx = pick([.8, 2.4, 4]), cy = pick([7.2, 10.2]), bx = rnd(6.8, 9.2), by = pick([6, 7.2, 8.4]) + .8;
+    const w = (x, y, o = {}) => ({ p: D(x, y, 0), ...o });
+    super([
+      w(11.4, -.3), w(9.7, 1.1, { wait: 1.5 }), w(11, 4.6), w(11, 5.8), w(bx, by, { wait: rnd(2, 4) }), w(bx, 9.6), w(6.6, 9.6),
+      w(cx + .4, cy + .55, { wait: 2.8, leave: me => ents.push(new Specimen(null, D(11, 12.2, 1.2), 'opd', [me.pos[0], me.pos[1] - .3, .9])) }),
+      w(6.6, 9.6), w(11, 9.6), w(11, 5), w(11.4, -.3),
+    ], 2.2);
+    this.alpha = 0; this.born = simT;
+    personEntity(this, { shirt: pick(SHIRTS), pants: pick(PANTS), skin: pick(SKIN), hair: pick(HAIR) });
+    stats.visitsOPD++;
+  }
+}
+let opdIn = 1, k1Idle = 0;
 
 /* กระสวยท่อลมจากอาคารศูนย์การแพทย์ */
 class Capsule {
-  constructor(src) {
-    this.src = src;
+  constructor(src, load = null) {
+    this.src = src; this.load = load;
     const zw = pick(WARD_Z);
-    this.pts = src === 'ward' ? [[29.35, 24.8, zw], ...PIPE_UP] : PIPE_F1;
+    this.pts = src === 'k1' ? PIPE_K1 : src === 'ward' ? [[29.35, 24.8, zw], ...PIPE_UP] : PIPE_F1;
     this.back = src === 'ward' ? [25, 25.6, zw + .8] : [23.4, 28.6, 1];
-    this.n = 1 + Math.floor(Math.random() * 3);
+    this.n = load ? load.length : 1 + Math.floor(Math.random() * 3);
+    if (load) load.forEach((s, i) => { s.carrier = this; s.cslot = i; s.atK1 = false; s.hidden = true; });
     this.i = 0; this.pos = [...this.pts[0]]; this.wait = 1.6; this.step = '5b';
     this.g = el('g', {}, $fx);
-    this.g.innerHTML = `<circle r="11" fill="url(#glowO)"/><rect x="-6.5" y="-3.6" width="13" height="7.2" rx="3.6" fill="${src === 'ward' ? '#f97316' : '#ea580c'}" stroke="#fff" stroke-width="1.3"/>`;
+    this.g.innerHTML = `<circle r="11" fill="url(#glowO)"/><rect x="-6.5" y="-3.6" width="13" height="7.2" rx="3.6" fill="${{ ward: '#f97316', f1: '#ea580c', k1: '#2563eb' }[src]}" stroke="#fff" stroke-width="1.3"/>`;
   }
   update(dt) {
     if (this.wait > 0) { this.wait -= dt; return; }
@@ -786,12 +955,17 @@ class Capsule {
     }
     if (this.i >= this.pts.length - 1 && !this.gone) {
       this.gone = true; this.g.remove();
-      for (let k = 0; k < this.n; k++) ents.push(new Specimen(null, this.back));
       stats.received += this.n;
-      stats[this.src === 'ward' ? 'recvWard' : 'recvF1'] += this.n;
+      if (this.load) {
+        for (const sp of this.load) { sp.carrier = null; sp.hidden = false; sp.pos = [...this.pos]; sp.d2 = true; }
+        stats.recvOPD += this.n;
+      } else {
+        for (let k = 0; k < this.n; k++) ents.push(new Specimen(null, this.back));
+        stats[this.src === 'ward' ? 'recvWard' : 'recvF1'] += this.n;
+      }
     }
   }
-  render() { const [x, y] = iso(...this.pos); this.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`); }
+  render() { const [x, y] = iso(...this.pos); this.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`); this.g.setAttribute('opacity', kMask(this.pos)); }
 }
 const caps = [];
 let capIn = 2;
@@ -854,8 +1028,13 @@ function tick(dt) {
   spawnIn -= dt;
   const live = ents.filter(e => e instanceof Patient).length;
   if (spawnIn <= 0 && live < 11) { ents.push(new Patient()); spawnIn = rnd(3.8, 6.5); }
+  opdIn -= dt;
+  if (opdIn <= 0 && ents.filter(e => e instanceof OPDPatient).length < 8) { ents.push(new OPDPatient()); opdIn = rnd(4, 7); }
   for (const e of ents) e.update(dt);
-  courier.update(dt);
+  for (const c of couriers) c.update(dt);
+  k1Idle += dt;
+  const k1Ready = ents.filter(e => e instanceof Specimen && e.atK1 && !e.carrier);
+  if (k1Ready.length && (k1Idle > 3.5 || k1Ready.length >= 3)) { caps.push(new Capsule('k1', k1Ready)); k1Idle = 0; }
   capIn -= dt;
   if (capIn <= 0) { caps.push(new Capsule(Math.random() < .6 ? 'ward' : 'f1')); capIn = rnd(4.5, 8.5); }
   for (const c of caps) c.update(dt);
@@ -872,13 +1051,20 @@ function tick(dt) {
   if (clockMin() >= 16 * 60) { simT = 0; for (const k in stats) stats[k] = 0; }
 }
 
+/* กิตติวัฒนา: ปกติเห็นชั้น 3 (ซ่อนสิ่งที่อยู่ชั้น 1) · โหมดดูชั้น 1 จางชั้น 3 */
+let cutaway = false;
+function kMask(p) {
+  if (p[0] < 0 || p[0] > 20 || p[1] < 0 || p[1] > 21.9) return 1;
+  return cutaway ? (p[2] > 2.6 ? .12 : 1) : (p[2] < 4.3 ? 0 : 1);
+}
 let featured = null;
 function render(now) {
   const order = [];
-  for (const e of [...ents, courier]) {
+  for (const e of [...ents, ...couriers]) {
     const [x, y] = iso(...e.pos);
     e.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
-    if (e !== courier) e.g.setAttribute('opacity', (e.fading ? Math.max(0, e.fadeOut ?? 1) : e.alpha).toFixed(2));
+    const base = e instanceof Courier ? 1 : (e.fading ? Math.max(0, e.fadeOut ?? 1) : e.alpha);
+    e.g.setAttribute('opacity', (e.hidden ? 0 : base * kMask(e.pos)).toFixed(2));
     if (e.l1) animatePerson(e, now);
     if (e instanceof Patient) {
       e.ring.setAttribute('opacity', e === featured ? (.55 + .45 * Math.sin(now * 5)).toFixed(2) : 0);
@@ -889,6 +1075,7 @@ function render(now) {
   for (const t of track) {
     const [x, y] = iso(t.x, 11.55, LAB_Z + .33);
     t.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+    t.g.setAttribute('opacity', kMask([t.x, 11.55, LAB_Z + .33]));
     order.push([t.x + 11.55, t.g]);
   }
   order.sort((a, b) => a[0] - b[0]).forEach(o => $dyn.appendChild(o[1]));
@@ -918,7 +1105,7 @@ function renderTags() {
   const f = featured;
   if (f) { const [x, y] = iso(...f.pos); setTag(TP, tagP, f.hn, x, y - 38, true); } else setTag(TP, tagP, '', 0, 0, false);
   const s = f && f.spec && !f.spec.fading ? f.spec : null;
-  if (s) { const [x, y] = iso(...s.pos); setTag(TS, tagS, 'หลอดเลือด ' + f.hn, x, y - 24, true); } else setTag(TS, tagS, '', 0, 0, false);
+  if (s) { const [x, y] = iso(...s.pos); setTag(TS, tagS, 'หลอดเลือด ' + f.hn, x, y - 24, kMask(s.pos) > .5); } else setTag(TS, tagS, '', 0, 0, false);
 }
 
 /* ---------- side panel ---------- */
@@ -945,12 +1132,12 @@ function updateUI() {
   document.getElementById('k2').textContent = stats.received;
   document.getElementById('k3').textContent = stats.reported;
   document.getElementById('k4').innerHTML = stats.reportedW ? `${Math.round(stats.tatSum / stats.reportedW)} <small>นาที</small>` : '–';
-  const srcN = [stats.recvW, stats.recvWard, stats.recvF1], srcMax = Math.max(1, ...srcN);
+  const srcN = [stats.recvW, stats.recvWard, stats.recvF1, stats.recvOPD], srcMax = Math.max(1, ...srcN);
   srcN.forEach((n, i) => { document.getElementById('s' + (i + 1)).textContent = n; document.getElementById('b' + (i + 1)).style.width = (n / srcMax * 100) + '%'; });
   const cnt = {};
   for (const e of ents) { if (e.fading) continue; const s = e.step; if (typeof s === 'number') cnt[s] = (cnt[s] || 0) + 1; }
   for (const p of pulses) if (!p.gone && (p instanceof Ring || (p.result && !p.fin))) cnt[8] = (cnt[8] || 0) + 1;
-  cnt['5b'] = caps.length;
+  cnt['5b'] = caps.filter(c => c.src !== 'k1').length;
   const fs = stepOf(featured);
   for (const k in stepEls) {
     const n = cnt[k] || 0;
@@ -992,7 +1179,9 @@ const ZONES = [
   { id: 'all', name: 'ภาพรวม' },
   { id: 'well', name: 'Wellness ชั้น 2', frame: [24.5, 42.5, -.5, 15, 0, W_Z + 3], hit: [25, 42, 0, 14.5, 0, W_Z] },
   { id: 'route', name: 'ทางเดินนำส่ง', frame: [15, 26.5, -.8, 12, 0, LAB_Z + 2.6], hit: [20.2, 25, 0, 7.6, 0, LAB_Z + .9] },
-  { id: 'lab', name: 'แล็บ ชั้น 3', frame: [0, 20, 0, 22, 0, LAB_Z + 3.3], hit: [0, 20, 0, 21.9, 0, LAB_Z] },
+  { id: 'lab', name: 'กิตติ ชั้น 3', frame: [0, 20, 0, 22, 0, LAB_Z + 3.3], hit: [0, 20, 0, 21.9, 0, LAB_Z] },
+  { id: 'lab1', name: 'กิตติ ชั้น 1', frame: [0, 20, 0, 21.9, 0, 2.8] },
+  { id: 'dul', name: 'ดุลโสภาคย์ ชั้น 1', frame: [DX - .4, DX + 14.3, DY - .6, DY + 17.2, 0, 2.8], hit: [DX - .2, DX + 14.1, DY - .2, DY + 16.9, 0, .6] },
   ...('5b' in STEPS ? [{ id: 'med', name: 'ศูนย์การแพทย์', frame: [20.3, 30, 23.5, 31.5, 0, 8.3], hit: [20.7, 29.9, 24, 30.3, 0, 6.6] }] : []),
 ];
 function zoneBox(f) {
@@ -1017,10 +1206,17 @@ function animateTo(t) {
   };
   zoomAnim = requestAnimationFrame(step);
 }
+function setCut(on) {
+  cutaway = on;
+  document.getElementById('kitti-shell').style.opacity = on ? .07 : 1;
+  document.getElementById('labels-k1').style.opacity = on ? 1 : 0;
+  document.getElementById('labels-k3').style.opacity = on ? .12 : 1;
+}
 function setFocus(id) {
   focusZone = id;
+  if (id) setCut(id === 'lab1');
   document.querySelectorAll('#zoom [data-z]').forEach(b => b.classList.toggle('on', b.dataset.z === id));
-  document.querySelectorAll('.hit').forEach(h => h.classList.toggle('cur', h.dataset.z === id));
+  document.querySelectorAll('.hit').forEach(h => h.classList.toggle('cur', h.dataset.z === id || (id === 'lab1' && h.dataset.z === 'lab')));
 }
 function goZone(id) {
   const z = ZONES.find(z => z.id === id);
@@ -1057,7 +1253,7 @@ function buildZoomUI() {
   }
   hits.addEventListener('click', e => {
     if (dragMoved) return;
-    const h = e.target.closest('.hit'); if (h && h.dataset.z !== focusZone) goZone(h.dataset.z);
+    const h = e.target.closest('.hit'); if (h && !h.classList.contains('cur')) goZone(h.dataset.z);
   });
   setFocus('all');
 }
