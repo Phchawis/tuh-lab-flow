@@ -111,6 +111,7 @@ body{
 .hit.cur{fill-opacity:0;stroke:none;cursor:inherit}
 .hint{font-size:11.5px;color:var(--muted);margin-top:2px}
 .zoom .ic{min-width:28px}
+#fx.cut .pulse{opacity:0}
 .btns .lbl{font-size:12px;font-weight:600;color:var(--muted);padding:4px 6px 4px 8px;align-self:center}
 
 .top{padding:0 16px;text-align:left}
@@ -175,7 +176,7 @@ body{
         <radialGradient id="glowO"><stop offset="0" stop-color="#fb923c" stop-opacity=".6"/><stop offset="1" stop-color="#fb923c" stop-opacity="0"/></radialGradient>
         <radialGradient id="glowG"><stop offset="0" stop-color="#4ade80" stop-opacity=".7"/><stop offset="1" stop-color="#4ade80" stop-opacity="0"/></radialGradient>
       </defs>
-      <g id="world"><g id="static"></g><g id="dyn"></g><g id="fx"></g><g id="labels"></g><g id="tags"></g></g>
+      <g id="world"><g id="static"></g><g id="labels"></g><g id="dyn"></g><g id="fx"></g><g id="tags"></g></g>
     </svg>
     <div class="ctrl">
       <div class="btns" id="floor" role="group" aria-label="เลือกชั้นอาคารกิตติวัฒนา"><span class="lbl">อาคารกิตติวัฒนา</span><button data-f="3" class="on">ชั้น 3</button><button data-f="1">ชั้น 1</button></div>
@@ -665,14 +666,15 @@ function buildScene() {
 
   /* ท่อลม: อาคารศูนย์การแพทย์ → อาคารกิตติวัฒนา ชั้น 3 */
   const pipe = PIPE_F1.map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
-  el('polyline', { points: pipe, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
-  el('polyline', { points: pipe, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
+  const pipesK3 = el('g', { id: 'pipes-k3', class: 'fade' }, $static);   // ท่อที่วิ่งบนชั้น 3: จางลงเมื่อดูชั้น 1
+  el('polyline', { points: pipe, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, pipesK3);
+  el('polyline', { points: pipe, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, pipesK3);
   const pipeD = PIPE_D.slice(0, 6).map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');   // ส่วนนอกอาคารกิตติ
   el('polyline', { points: pipeD, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
   el('polyline', { points: pipeD, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
   const pipeK1 = [[14.8, 2.5, LAB_Z + .05], [14.8, 2.5, 6.9], [15.7, 2.5, 6.9], [15.7, 13.9, 6.9]].map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
-  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
-  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
+  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, pipesK3);
+  el('polyline', { points: pipeK1, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, pipesK3);
 }
 const WARD_Z = [2.4, 4, 5.6];
 const PIPE_UP = [[29.35, 24.8, 6.9], [29.35, 23.6, 6.9], [15.7, 23.6, 6.9], [15.7, 13.9, 6.9], [13.95, 13.9, 6.9], [13.95, 13.9, LAB_Z + 1.15]];
@@ -719,8 +721,8 @@ function buildLabels() {
   const riserK1 = [[14.8, 2.5, 1.25], [14.8, 2.5, LAB_Z + .05]].map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
   el('polyline', { points: riserK1, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linecap': 'round', opacity: .85 }, $labels);
   el('polyline', { points: riserK1, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-dasharray': '3 5', class: 'flow' }, $labels);
-  label(12.6, 12.9, 0, { n: '5ง', c: '#2563eb', th: 'ห้องเคมีคลินิก ชั้น 1', en: 'รับท่อลมจากดุลโสภาคย์ → เดินส่งห้องรับสิ่งส่งตรวจ' }, 1.8);
-  label(13.2, 2.2, 0, { n: '5จ', c: '#2563eb', th: 'ห้องรับสิ่งส่งตรวจ ชั้น 1', en: 'ส่งท่อลมขึ้นชั้น 3 (สถานีเดียวกับศูนย์การแพทย์)' }, 1.7);
+  label(12.6, 12.9, 0, { n: '5ง', c: '#2563eb', th: 'ห้องเคมีคลินิก ชั้น 1', en: 'รับท่อลมจากดุลโสภาคย์ → เดินส่งห้องรับสิ่งส่งตรวจ' }, 2.9);
+  label(14.8, 2.5, 0, { n: '5จ', c: '#2563eb', th: 'ห้องรับสิ่งส่งตรวจ ชั้น 1', en: 'ส่งท่อลมขึ้นชั้น 3 (สถานีเดียวกับศูนย์การแพทย์)' }, 2.9);
   $labels = root;
   label(...D(3, 9.9, 0), { n: '5ค', c: '#2563eb', th: 'หมวดงานบริหารสิ่งส่งตรวจและบริการผู้ป่วยนอก', en: 'ตึกดุลโสภาคย์ ชั้น 1 · คลินิกพิเศษ · ส่งท่อลมไปกิตติ ชั้น 1' }, 2.3);
   label(21, .8, LAB_Z + .9, { n: '5ก', lab: 1, th: 'เจ้าหน้าที่เดินนำส่งสิ่งส่งตรวจ', en: 'ชวนชูชาติ ชั้น 2 → กิตติวัฒนา ชั้น 3' }, 1.1);
@@ -989,8 +991,8 @@ let capIn = 2;
 class Pulse {
   constructor(a, b, dur, col, lift, done, follow) {
     this.a = a; this.b0 = b; this.dur = dur; this.t = 0; this.col = col; this.lift = lift; this.done = done; this.follow = follow;
-    this.path = el('path', { fill: 'none', stroke: col, 'stroke-width': 2, 'stroke-dasharray': '6 6', class: 'flow', opacity: .7 }, $fx);
-    this.dot = el('g', {}, $fx);
+    this.path = el('path', { fill: 'none', stroke: col, 'stroke-width': 2, 'stroke-dasharray': '6 6', class: 'flow pulse', opacity: .7 }, $fx);
+    this.dot = el('g', { class: 'pulse' }, $fx);
     this.dot.innerHTML = `<circle r="12" fill="${col === '#22c55e' ? 'url(#glowG)' : 'url(#glow)'}"/><circle r="4.5" fill="${col}" stroke="#fff" stroke-width="1.5"/>`;
   }
   get result() { return this.col === '#22c55e'; }
@@ -1016,7 +1018,7 @@ class Pulse {
 class Ring {
   constructor(p, dur, done) {
     const q = iso(...p); this.dur = dur; this.t = 0; this.done = done;
-    this.g = el('g', { transform: `translate(${q[0].toFixed(1)},${q[1].toFixed(1)})` }, $fx);
+    this.g = el('g', { class: 'pulse', transform: `translate(${q[0].toFixed(1)},${q[1].toFixed(1)})` }, $fx);
     this.c = el('circle', { r: 6, fill: 'none', stroke: '#8b5cf6', 'stroke-width': 2 }, this.g);
     this.ck = el('g', { opacity: 0 }, this.g);
     this.ck.innerHTML = `<circle r="8" fill="#8b5cf6"/><path d="M-3.5,0l2.4,2.4l4.4,-4.6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
@@ -1074,7 +1076,7 @@ function tick(dt) {
 let cutaway = false;
 function kMask(p) {
   if (p[0] < 0 || p[0] > 20 || p[1] < 0 || p[1] > 21.9) return 1;
-  return cutaway ? (p[2] > 2.6 ? .12 : 1) : (p[2] < 4.3 ? 0 : 1);
+  return cutaway ? (p[2] > 2.6 ? 0 : 1) : (p[2] < 4.3 ? 0 : 1);
 }
 let featured = null;
 function render(now) {
@@ -1227,9 +1229,11 @@ function animateTo(t) {
 }
 function setCut(on) {
   cutaway = on;
-  document.getElementById('kitti-shell').style.opacity = on ? .07 : 1;
+  document.getElementById('kitti-shell').style.opacity = on ? 0 : 1;
+  document.getElementById('pipes-k3').style.opacity = on ? .1 : 1;
+  $fx.classList.toggle('cut', on);
   document.getElementById('labels-k1').style.opacity = on ? 1 : 0;
-  document.getElementById('labels-k3').style.opacity = on ? .12 : 1;
+  document.getElementById('labels-k3').style.opacity = on ? 0 : 1;
   document.querySelectorAll('#floor [data-f]').forEach(b => b.classList.toggle('on', (b.dataset.f === '1') === on));
 }
 document.getElementById('floor').addEventListener('click', e => {
