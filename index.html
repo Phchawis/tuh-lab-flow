@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>เส้นทางสิ่งส่งตรวจ กิตติวัฒนา</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* layout: side panel of live numbers + isometric campus scene; scene art keeps its own pastel palette in both themes */
+:root{
+  --bg:#eaf0f6; --bg-hi:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#dde5ee;
+  --card:rgba(255,255,255,.88); --surface:#ffffff; --chip:#f1f5f9; --track:#eef2f7; --shadow:rgba(15,23,42,.05);
+  --pt:#0d9488; --pt-soft:#ccfbf1; --lab:#7c3aed; --lab-soft:#ede9fe; --or:#ea580c; --or-soft:#ffedd5;
+  --feat:#f59e0b; --feat-soft:#fef3c7; --me-bg:#fffbeb; --me-ring:#fcd34d; --on-ink:#ffffff;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1420; --bg-hi:#1a2333; --ink:#e5e9f0; --muted:#94a3b8; --line:#2a3546;
+  --card:rgba(22,30,44,.9); --surface:#182131; --chip:#263244; --track:#263244; --shadow:rgba(0,0,0,.3);
+  --pt:#2dd4bf; --pt-soft:#123d3a; --lab:#a78bfa; --lab-soft:#2e1f55; --or:#fb923c; --or-soft:#3d1f0c;
+  --feat:#fbbf24; --feat-soft:#3a2f12; --me-bg:#2c2514; --me-ring:#a16207; --on-ink:#0e1420; color-scheme:dark;
+} }
+:root[data-theme="dark"]{
+  --bg:#0e1420; --bg-hi:#1a2333; --ink:#e5e9f0; --muted:#94a3b8; --line:#2a3546;
+  --card:rgba(22,30,44,.9); --surface:#182131; --chip:#263244; --track:#263244; --shadow:rgba(0,0,0,.3);
+  --pt:#2dd4bf; --pt-soft:#123d3a; --lab:#a78bfa; --lab-soft:#2e1f55; --or:#fb923c; --or-soft:#3d1f0c;
+  --feat:#fbbf24; --feat-soft:#3a2f12; --me-bg:#2c2514; --me-ring:#a16207; --on-ink:#0e1420; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse at 60% 35%,var(--bg-hi) 0%,var(--bg) 75%);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  color:var(--ink);
+  font-family:"IBM Plex Sans Thai",Thonburi,"Noto Sans Thai",system-ui,sans-serif;
+  overflow:hidden;
+}
+.app{display:grid;grid-template-columns:304px 1fr;height:100%}
+.panel{padding-block:16px;padding-inline:0;min-width:0;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 4px 18px var(--shadow)}
+.clock{display:flex;align-items:flex-end;justify-content:space-between}
+.clock .t{font-size:40px;font-weight:700;line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.clock .d{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.kpi .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .v small{font-size:12px;font-weight:500;color:var(--muted)}
+.kpi .l{font-size:11.5px;color:var(--muted);line-height:1.3}
+.h{font-size:12px;font-weight:600;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+.tag{font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:99px;background:var(--chip);color:var(--muted)}
+.track .who{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.track .who i{width:10px;height:10px;border-radius:50%;background:var(--feat);box-shadow:0 0 0 4px var(--feat-soft)}
+.track .st{font-size:13px;margin-top:4px;line-height:1.45}
+.track .sp{font-size:12px;color:var(--lab);margin-top:2px;min-height:17px}
+.bar{height:6px;background:var(--track);border-radius:99px;margin-top:10px;overflow:hidden}
+.bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pt),var(--lab));border-radius:99px;transition:width .4s}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.grp{font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 2px;display:flex;align-items:center;gap:6px}
+.grp:first-child{margin-top:0}
+.grp::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c)}
+.step{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:5px 6px;border-radius:9px;transition:background .3s}
+.step .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;background:var(--soft);color:var(--c)}
+.step .tx{font-size:12.5px;font-weight:600;line-height:1.25}
+.step .tx small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.step .c{font-size:11.5px;font-weight:700;min-width:24px;text-align:center;padding:1px 6px;border-radius:99px;background:var(--chip);color:var(--muted);font-variant-numeric:tabular-nums}
+.step.on .c{background:var(--c);color:var(--on-ink)}
+.step.me{background:var(--me-bg);box-shadow:inset 0 0 0 1.5px var(--me-ring)}
+.p{--c:var(--pt);--soft:var(--pt-soft)}
+.l{--c:var(--lab);--soft:var(--lab-soft)}
+.o{--c:var(--or);--soft:var(--or-soft)}
+.src .row{display:flex;align-items:center;gap:8px;font-size:12px;margin-top:7px}
+.src .row:first-of-type{margin-top:0}
+.src .nm{flex:1;line-height:1.3}
+.src .nm small{display:block;color:var(--muted);font-size:10.5px}
+.src .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.src b{font-variant-numeric:tabular-nums}
+.sb{height:5px;background:var(--track);border-radius:99px;margin-top:4px;overflow:hidden}
+.sb i{display:block;height:100%;width:0;border-radius:99px;transition:width .4s}
+.note{font-size:11px;color:var(--muted);line-height:1.5}
+
+.stage{position:relative;min-width:0}
+.top{position:absolute;top:14px;left:0;right:0;text-align:center;pointer-events:none;padding:0 200px}
+.top h1{margin:0;font-size:21px;font-weight:700;letter-spacing:-.2px}
+.top p{margin:3px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+#scene{position:absolute;inset:80px 8px 8px 8px;width:calc(100% - 16px);height:calc(100% - 88px)}
+.ctrl{position:absolute;right:16px;top:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.btns{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
+.btns button{font:inherit;font-size:12px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:4px 9px;border-radius:7px;cursor:pointer}
+.btns button.on{background:var(--ink);color:var(--on-ink)}
+.btns button:focus-visible{outline:2px solid var(--lab);outline-offset:2px}
+.legend{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--muted);padding:9px 11px}
+.legend span{display:flex;align-items:center;gap:7px}
+.legend svg{flex:none}
+
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6px)}}
+.bob{animation:bob 2.6s ease-in-out infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.flow{animation:dash 1.2s linear infinite}
+@media (prefers-reduced-motion: reduce){ .bob,.flow{animation:none} }
+
+@media (max-width:1400px){ .top{padding:0 16px;text-align:left} .ctrl{top:auto;bottom:12px} }
+@media (max-width:900px){
+  body{overflow:auto}
+  .app{grid-template-columns:1fr;height:auto}
+  .stage{order:-1;height:auto}
+  .panel{padding-block:0 16px;padding-inline:0}
+  .ctrl{position:static;flex-direction:row;justify-content:center;padding:6px 0 0;flex-wrap:wrap}
+  .legend{flex-direction:row;flex-wrap:wrap}
+  .top{position:static;padding:14px 0 0;text-align:center}
+  .top h1{font-size:17px}
+  #scene{inset:auto;position:relative;width:100%;height:52vh;min-height:300px;display:block}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <div class="card clock">
+      <div class="t" id="clock">07:30</div>
+      <div class="d">จำลองหนึ่งวันทำการ<br>07:30–16:00 น.</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="v" id="k1">0</div><div class="l">ผู้รับบริการวันนี้</div></div>
+      <div class="kpi"><div class="v" id="k2">0</div><div class="l">สิ่งส่งตรวจถึงห้องแล็บ</div></div>
+      <div class="kpi"><div class="v" id="k3">0</div><div class="l">รายงานผลแล้ว</div></div>
+      <div class="kpi"><div class="v" id="k4">–</div><div class="l">Wellness: เจาะเลือด → รายงานผล</div></div>
+    </div>
+    <div class="card src">
+      <div class="h">ที่มาของสิ่งส่งตรวจวันนี้ <span class="tag">หลอด</span></div>
+      <div class="row"><span class="dot" style="background:#7c3aed"></span><span class="nm">Wellness<small>เจ้าหน้าที่เดินนำส่ง</small></span><b id="s1">0</b></div><div class="sb"><i id="b1" style="background:#7c3aed"></i></div>
+      <div class="row"><span class="dot" style="background:#f97316"></span><span class="nm">หอผู้ป่วย (Ward)<small>อาคารศูนย์การแพทย์ · ท่อลม</small></span><b id="s2">0</b></div><div class="sb"><i id="b2" style="background:#f97316"></i></div>
+      <div class="row"><span class="dot" style="background:#ea580c"></span><span class="nm">หมวดงานบริหารสิ่งส่งตรวจฯ<small>อาคารศูนย์การแพทย์ ชั้น 1 · ท่อลม</small></span><b id="s3">0</b></div><div class="sb"><i id="b3" style="background:#ea580c"></i></div>
+    </div>
+    <div class="card track">
+      <div class="h">กำลังติดตาม <span class="tag">ตัวอย่าง</span></div>
+      <div class="who"><i></i><span id="tw">–</span></div>
+      <div class="st" id="ts">–</div>
+      <div class="sp" id="tsp"></div>
+      <div class="bar"><b id="tb"></b></div>
+    </div>
+    <div class="card">
+      <div class="h">ขั้นตอนบริการ <span class="tag">จำนวนขณะนี้</span></div>
+      <ul class="steps" id="steps"></ul>
+    </div>
+    <div class="note">ตัวเลขทั้งหมดเป็นข้อมูลจำลอง · ตำแหน่งอาคารอ้างอิงผังโรงพยาบาล · ชั้น 3 อาคารกิตติวัฒนาอ้างอิงแผนผังระยะที่ 3 · ระยะห่างของอาคารศูนย์การแพทย์ย่อให้อยู่ในภาพเดียว · ตำแหน่งสถานีท่อลมและเครื่องมือภายในห้องเป็นภาพประกอบ</div>
+  </aside>
+  <main class="stage">
+    <div class="top">
+      <h1>เส้นทางผู้รับบริการและสิ่งส่งตรวจ</h1>
+      <p>Wellness (อาคารชวนชูชาติ ชั้น 2) · เดินส่ง &nbsp;+&nbsp; อาคารศูนย์การแพทย์ (Ward, ชั้น 1) · ท่อลม<br>→ หมวดงานปฏิบัติการวินิจฉัยทางการแพทย์ · งานห้องปฏิบัติการเทคนิคการแพทย์ (อาคารกิตติวัฒนา ชั้น 3)</p>
+    </div>
+    <svg id="scene" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="แผนผังจำลองเส้นทางผู้รับบริการและสิ่งส่งตรวจ">
+      <defs>
+        <radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".55"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
+        <radialGradient id="glowO"><stop offset="0" stop-color="#fb923c" stop-opacity=".6"/><stop offset="1" stop-color="#fb923c" stop-opacity="0"/></radialGradient>
+        <radialGradient id="glowG"><stop offset="0" stop-color="#4ade80" stop-opacity=".7"/><stop offset="1" stop-color="#4ade80" stop-opacity="0"/></radialGradient>
+      </defs>
+      <g id="world"><g id="static"></g><g id="dyn"></g><g id="fx"></g><g id="labels"></g><g id="tags"></g></g>
+    </svg>
+    <div class="ctrl">
+      <div class="btns" id="speed">
+        <button data-a="pause">⏸ หยุด</button>
+        <button data-s="1" class="on">1×</button>
+        <button data-s="2">2×</button>
+        <button data-s="4">4×</button>
+      </div>
+      <div class="card legend">
+        <span><svg width="14" height="14"><circle cx="7" cy="7" r="5" fill="#f97316"/></svg>ผู้รับบริการ</span>
+        <span><svg width="14" height="14"><rect x="1" y="4" width="12" height="7" rx="2" fill="#fef3c7" stroke="#d97706"/></svg>เจ้าหน้าที่เดินนำส่ง</span>
+        <span><svg width="14" height="14"><rect x="5" y="1" width="4" height="12" rx="2" fill="#dc2626"/><rect x="4" y="0" width="6" height="3" rx="1" fill="#7c3aed"/></svg>หลอดจาก Wellness</span>
+        <span><svg width="14" height="14"><rect x="1" y="4" width="12" height="6" rx="3" fill="#f97316"/></svg>กระสวยท่อลม (ศูนย์การแพทย์)</span>
+        <span><svg width="14" height="14"><circle cx="7" cy="7" r="4" fill="#22c55e"/></svg>ผลตรวจส่งถึงแพทย์</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const S = 24, CX = 0.8660254;
+const SIM_MIN = 1.5;                // 1 วินาทีจริง = 1.5 นาทีในแบบจำลอง
+const LAB_Z = 5;                    // อาคารกิตติวัฒนา ชั้น 3
+const W_Z = 2.5;                    // อาคารชวนชูชาติ ชั้น 2
+const W_OFF = [25.5, -10.5, W_Z];   // ผังห้อง Wellness (พิกัดภายใน) → พิกัดโลก
+const Ww = (x, y, z = 0) => [x + W_OFF[0], y + W_OFF[1], z + W_OFF[2]];
+
+// OFF shifts everything drawn while building the static scene; it is [0,0,0] for moving things
+let OFF = [0, 0, 0];
+const iso = (x, y, z = 0) => {
+  const X = x + OFF[0], Y = y + OFF[1], Z = z + OFF[2];
+  return [(X - Y) * S * CX, (X + Y) * S * 0.5 - Z * S];
+};
+const P = a => a.map(p => { const q = iso(p[0], p[1], p[2] || 0); return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ');
+function withOff(o, fn) { const s = OFF; OFF = [s[0] + o[0], s[1] + o[1], s[2] + o[2]]; fn(); OFF = s; }
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function shade(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.min(255, Math.round(v * f)));
+  return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+const $static = document.getElementById('static');
+const $dyn = document.getElementById('dyn');
+const $fx = document.getElementById('fx');
+const $labels = document.getElementById('labels');
+const $tags = document.getElementById('tags');
+
+/* ---------- primitives ---------- */
+function box(parent, x, y, z, w, d, h, col, o = {}) {
+  const g = el('g', o.op ? { opacity: o.op } : {}, parent);
+  const sa = o.stroke === false ? {} : { stroke: shade(col, .74), 'stroke-width': .6, 'stroke-linejoin': 'round' };
+  el('polygon', { points: P([[x, y + d, z], [x + w, y + d, z], [x + w, y + d, z + h], [x, y + d, z + h]]), fill: shade(col, o.f1 || .9), ...sa }, g);
+  el('polygon', { points: P([[x + w, y, z], [x + w, y + d, z], [x + w, y + d, z + h], [x + w, y, z + h]]), fill: shade(col, o.f2 || .8), ...sa }, g);
+  el('polygon', { points: P([[x, y, z + h], [x + w, y, z + h], [x + w, y + d, z + h], [x, y + d, z + h]]), fill: col, ...sa }, g);
+  return g;
+}
+const quad = (parent, pts, fill, extra = {}) => el('polygon', { points: P(pts), fill, ...extra }, parent);
+const flat = (parent, x, y, z, w, d, fill, extra = {}) => quad(parent, [[x, y, z], [x + w, y, z], [x + w, y + d, z], [x, y + d, z]], fill, extra);
+function faceScreen(g, x, y, z, w, h, col = '#7dd3fc') {
+  quad(g, [[x, y, z], [x + w, y, z], [x + w, y, z + h], [x, y, z + h]], col, { stroke: '#0f172a', 'stroke-opacity': .25, 'stroke-width': .5 });
+}
+
+/* solid lower floors with window bands on the visible (+y, +x) faces */
+function facade(x, y, w, d, floors, fh, col) {
+  box($static, x, y, 0, w, d, floors * fh, col, { f1: .96, f2: .87 });
+  const band = shade(col, .86), win = { stroke: '#a9c6db', 'stroke-width': .4 };
+  for (let f = 0; f < floors; f++) {
+    const z0 = f * fh, wz0 = z0 + fh * .26, wz1 = z0 + fh * .74;
+    if (f) {
+      quad($static, [[x, y + d, z0], [x + w, y + d, z0], [x + w, y + d, z0 + .07], [x, y + d, z0 + .07]], band);
+      quad($static, [[x + w, y, z0], [x + w, y + d, z0], [x + w, y + d, z0 + .07], [x + w, y, z0 + .07]], shade(col, .78));
+    }
+    for (let xx = x + .35; xx + .52 <= x + w - .25; xx += .82) quad($static, [[xx, y + d, wz0], [xx + .52, y + d, wz0], [xx + .52, y + d, wz1], [xx, y + d, wz1]], '#cfe6f5', win);
+    for (let yy = y + .3; yy + .45 <= y + d - .25; yy += .75) quad($static, [[x + w, yy, wz0], [x + w, yy + .45, wz0], [x + w, yy + .45, wz1], [x + w, yy, wz1]], '#b8d6ea', win);
+  }
+}
+function door(x0, x1, y, h) {
+  quad($static, [[x0 - .12, y, 0], [x1 + .12, y, 0], [x1 + .12, y, h + .12], [x0 - .12, y, h + .12]], '#94a3b8');
+  quad($static, [[x0, y, 0], [x1, y, 0], [x1, y, h], [x0, y, h]], '#9ec3dc', { stroke: '#7ea6c2', 'stroke-width': .5 });
+  quad($static, [[(x0 + x1) / 2 - .02, y, 0], [(x0 + x1) / 2 + .02, y, 0], [(x0 + x1) / 2 + .02, y, h], [(x0 + x1) / 2 - .02, y, h]], '#7ea6c2');
+}
+
+/* furniture is depth-sorted; each item remembers the OFF it was queued under */
+let Q = [];
+const F = (x, y, w, d, fn) => {
+  const o = [...OFF];
+  Q.push({ k: x + o[0] + w / 2 + y + o[1] + d / 2, fn: g => { const s = OFF; OFF = o; fn(g); OFF = s; } });
+};
+function flush(parent) { Q.sort((a, b) => a.k - b.k).forEach(q => q.fn(parent)); Q = []; }
+
+const desk = (x, y, z, w, d, col = '#e9d5b7') => F(x, y, w, d, g => box(g, x, y, z, w, d, .72, col));
+const monitor = (x, y, z) => F(x, y, .7, .1, g => { box(g, x, y, z, .7, .1, .5, '#334155'); faceScreen(g, x + .06, y + .1, z + .06, .58, .38); });
+const chair = (x, y, z, col) => F(x, y, .6, .6, g => { box(g, x, y, z, .6, .6, .4, col); box(g, x, y, z + .4, .6, .12, .5, col); });
+const bench = (x, y, z, w, col) => F(x, y, w, .6, g => { box(g, x, y, z, w, .6, .38, col); box(g, x, y, z + .38, w, .14, .42, col); });
+const kiosk = (x, y, z) => F(x, y, .6, .45, g => { box(g, x, y, z, .6, .45, 1.25, '#e2e8f0'); faceScreen(g, x + .08, y + .45, z + .6, .44, .5, '#38bdf8'); box(g, x, y, z + 1.25, .6, .45, .08, '#0d9488'); });
+const plant = (x, y, z, k = 1) => F(x, y, .4, .4, g => {
+  box(g, x, y, z, .4 * k, .4 * k, .35 * k, '#e7a17a');
+  const [a, b] = iso(x + .2 * k, y + .2 * k, z + .75 * k);
+  el('circle', { cx: a - 4 * k, cy: b + 2 * k, r: 6 * k, fill: '#4ade80' }, g);
+  el('circle', { cx: a + 4 * k, cy: b + 1 * k, r: 6.5 * k, fill: '#22c55e' }, g);
+  el('circle', { cx: a, cy: b - 4 * k, r: 6.5 * k, fill: '#16a34a' }, g);
+});
+const tree = (x, y) => F(x, y, .3, .3, g => {
+  box(g, x, y, 0, .3, .3, 1.1, '#a16207');
+  const [a, b] = iso(x + .15, y + .15, 1.7);
+  el('circle', { cx: a - 7, cy: b + 4, r: 11, fill: '#86efac' }, g);
+  el('circle', { cx: a + 7, cy: b + 3, r: 11, fill: '#4ade80' }, g);
+  el('circle', { cx: a, cy: b - 6, r: 12, fill: '#22c55e' }, g);
+});
+const analyzer = (x, y, z, w, d, h, accent) => F(x, y, w, d, g => {
+  box(g, x, y, z, w, d, h, '#f8fafc');
+  box(g, x, y, z + h, w, d, .07, accent, { stroke: false });
+  faceScreen(g, x + w * .58, y + d, z + h * .55, w * .3, h * .3, '#a5f3fc');
+  quad(g, [[x + .12, y + d, z + .12], [x + w * .5, y + d, z + .12], [x + w * .5, y + d, z + h * .45], [x + .12, y + d, z + h * .45]], shade(accent, 1.15), { opacity: .45 });
+});
+const fridge = (x, y, z, col = '#e0f2fe') => F(x, y, .9, .7, g => {
+  box(g, x, y, z, .9, .7, 1.8, col);
+  quad(g, [[x + .08, y + .7, z + .1], [x + .82, y + .7, z + .1], [x + .82, y + .7, z + 1.7], [x + .08, y + .7, z + 1.7]], shade(col, .93), { stroke: shade(col, .8), 'stroke-width': .6 });
+});
+const centrifuge = (x, y, z) => F(x, y, .7, .7, g => {
+  box(g, x, y, z, .7, .7, .5, '#cbd5e1');
+  const [a, b] = iso(x + .35, y + .35, z + .5);
+  el('ellipse', { cx: a, cy: b, rx: 7, ry: 4, fill: '#94a3b8' }, g);
+});
+const rack = (x, y, z) => F(x, y, .8, .3, g => {
+  box(g, x, y, z, .8, .3, .12, '#e2e8f0');
+  ['#7c3aed', '#dc2626', '#f59e0b', '#7c3aed', '#16a34a'].forEach((c, i) => box(g, x + .06 + i * .15, y + .1, z + .12, .08, .08, .22, c, { stroke: false }));
+});
+
+/* people */
+const SKIN = ['#f5d0b5', '#eac2a0', '#d6a77e', '#c68b5f'];
+const HAIR = ['#1f2937', '#3f2a1d', '#111827', '#57534e'];
+function personMarkup(o) {
+  const torso = o.coat
+    ? `<rect x="-5.2" y="-19.5" width="10.4" height="13.5" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width=".7"/><rect x="-1.5" y="-19.3" width="3" height="7" rx="1" fill="${o.shirt}"/>`
+    : `<rect x="-5" y="-19" width="10" height="12.5" rx="4" fill="${o.shirt}"/>`;
+  const carry = o.carry ? `<rect x="-7" y="-15.5" width="14" height="8.5" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width=".9"/><rect x="-7" y="-15.5" width="14" height="2.6" rx="1.2" fill="#f59e0b"/>` : '';
+  return `<ellipse cx="0" cy="0" rx="6.5" ry="2.6" fill="rgba(15,23,42,.16)"/>
+  <g class="bd"><rect class="l1" x="-3.7" y="-8.5" width="3.2" height="8.5" rx="1.5" fill="${o.pants}"/><rect class="l2" x=".5" y="-8.5" width="3.2" height="8.5" rx="1.5" fill="${o.pants}"/>${torso}
+  <circle cx="0" cy="-23.6" r="4.7" fill="${o.skin}"/><path d="M-4.9,-23.4a4.9,4.9 0 0 1 9.8,0c-2,-1.6 -7.8,-1.6 -9.8,0z" fill="${o.hair}"/>${o.cap ? `<rect x="-4.3" y="-29.4" width="8.6" height="3" rx="1.4" fill="${o.cap}"/>` : ''}${carry}</g>`;
+}
+const ROLE = {
+  nurse: { shirt: '#14b8a6', pants: '#0f766e', cap: '#99f6e4' },
+  phleb: { shirt: '#0ea5e9', pants: '#0369a1' },
+  mt: { shirt: '#8b5cf6', pants: '#475569', coat: true },
+  gen: { shirt: '#64748b', pants: '#475569', coat: true },
+  doc: { shirt: '#2563eb', pants: '#334155', coat: true },
+  coach: { shirt: '#22c55e', pants: '#334155' },
+  staff: { shirt: '#f59e0b', pants: '#334155' },
+  courier: { shirt: '#f59e0b', pants: '#1f2937', cap: '#fbbf24', carry: true },
+};
+function staff(x, y, z, role) {
+  F(x - .2, y - .2, .4, .4, g => {
+    const [a, b] = iso(x, y, z);
+    const outer = el('g', { transform: `translate(${a.toFixed(1)},${b.toFixed(1)})` }, g);
+    const inner = el('g', { class: 'bob', style: `animation-delay:${-rnd(0, 2.6).toFixed(2)}s` }, outer);
+    inner.innerHTML = personMarkup({ ...ROLE[role], skin: pick(SKIN), hair: pick(HAIR) });
+  });
+}
+function animatePerson(e, now) {
+  const mv = e.moving, s = Math.sin(e.phase);
+  e.l1.setAttribute('transform', `translate(0,${mv ? (-Math.max(0, s) * 1.6).toFixed(2) : 0})`);
+  e.l2.setAttribute('transform', `translate(0,${mv ? (-Math.max(0, -s) * 1.6).toFixed(2) : 0})`);
+  e.bd.setAttribute('transform', `translate(0,${mv ? (-Math.abs(s)).toFixed(2) : (Math.sin(now * 2 + e.seed) * .6).toFixed(2)})`);
+}
+
+/* text painted flat on a floor; dir 'x' runs down-right, 'y' runs up-right */
+function floorText(x, y, z, text, size, col, dir = 'x', parent = $static) {
+  const [a, b] = iso(x, y, z);
+  const m = dir === 'x' ? `${CX},0.5,${-CX},0.5` : `${CX},-0.5,${CX},0.5`;
+  const t = el('text', { transform: `matrix(${m},${a.toFixed(1)},${b.toFixed(1)})`, 'font-size': size, 'font-weight': 600, fill: col, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, parent);
+  t.textContent = text;
+}
+
+/* ---------- rooms ---------- */
+function rooms(list, z) {
+  for (const r of list) box($static, r.x + .05, r.y + .05, z, r.w - .1, r.d - .1, .03, r.col, { stroke: false });
+  for (const r of list) {
+    if (r.open) continue;
+    const wc = shade(r.col, .88);
+    box($static, r.x + .05, r.y + .05, z, r.w - .1, .14, .55, wc);
+    box($static, r.x + .05, r.y + .05, z, .14, r.d - .1, .55, wc);
+  }
+}
+
+// Wellness Center — อาคารชวนชูชาติ ชั้น 2 (พิกัดภายใน, จัดห้องเป็นภาพประกอบ)
+const W_ROOMS = [
+  { x: 0, y: 11, w: 5, d: 6, col: '#fee2e2', n: 4, th: 'ห้องเจาะเลือด', en: 'Blood collection' },
+  { x: 5, y: 11, w: 6, d: 6, col: '#dcfce7', n: 0, th: 'ประเมินสุขภาพ & ไลฟ์สไตล์', en: 'ระหว่างรอผลตรวจ' },
+  { x: 11, y: 11, w: 5, d: 6, col: '#fde2e4', n: 9, th: 'พบแพทย์ แจ้งผล & ให้คำแนะนำ', en: 'Doctor consultation' },
+  { x: 0, y: 17.5, w: 5, d: 5.5, col: '#e0f2fe', n: 3, th: 'ซักประวัติ & วัดสัญญาณชีพ', en: 'Vital signs' },
+  { x: 5, y: 17.5, w: 6, d: 5.5, col: '#fef9c3', n: 2, th: 'พื้นที่รอเรียกคิว', en: 'Waiting area' },
+  { x: 11, y: 17.5, w: 5, d: 5.5, col: '#dbeafe', n: 1, th: 'ลงทะเบียน / KIOSK', en: 'Registration' },
+];
+
+// อาคารกิตติวัฒนา ชั้น 3 — ตามแผนผังศูนย์ปฏิบัติการตรวจวินิจฉัยทางการแพทย์ ระยะที่ 3
+const L_ROOMS = [
+  { x: 0, y: 0, w: 7.2, d: 1.6, col: '#dfe8f3', name: 'ห้องน้ำ' },
+  { x: 7.2, y: 0, w: 12.8, d: 1.6, col: '#eef1f5', open: 1, name: 'ทางเดินภายนอก  ⟷', fs: 10 },
+  { x: 0, y: 1.6, w: 16.9, d: 1.6, col: '#f3f5f8', open: 1, name: 'ทางเดินภายใน', fs: 10 },
+  { x: 16.9, y: 1.6, w: 3.1, d: 18.6, col: '#dedfe2', name: 'ศูนย์พันธุศาสตร์', dir: 'y', fs: 12 },
+  { x: 14.5, y: 3.2, w: 2.4, d: 17, col: '#f3f5f8', open: 1, name: 'ทางเข้า ↓   ·   ↑ ทางออก', dir: 'y', fs: 9 },
+  { x: 0, y: 8.5, w: 4.35, d: 2.9, col: '#d9ecbf', name: 'ห้องพักเจ้าหน้าที่', fs: 9 },
+  { x: 0, y: 11.4, w: 4.35, d: 2.6, col: '#b5f2c9', name: 'ห้องสำรองน้ำยา', fs: 9 },
+  { x: 4.35, y: 8.5, w: 10.15, d: 6.5, col: '#f6e5d9', main: 1 },
+  { x: 0, y: 14, w: 4.35, d: 1, col: '#f3f5f8', open: 1 },
+  { x: 0, y: 15, w: 1.1, d: 5.2, col: '#f3f5f8', open: 1 },
+  { x: 1.1, y: 15, w: 3.25, d: 3.6, col: '#dcfad6', name: 'ห้องพัก', fs: 10 },
+  { x: 4.35, y: 15, w: 10.15, d: 3.6, col: '#e2cffb' },
+  { x: 1.1, y: 18.6, w: 3.25, d: 1.6, col: '#e2cffb' },
+  { x: 4.35, y: 18.6, w: 6.05, d: 1.6, col: '#e2cffb' },
+  { x: 10.4, y: 18.6, w: 1.3, d: 1.6, col: '#bcdcfb', name: 'ห้องน้ำกรอง', dir: 'y', fs: 6.5 },
+  { x: 11.7, y: 18.6, w: 2.8, d: 1.6, col: '#e2cffb' },
+  { x: 0, y: 20.2, w: 16.9, d: 1.7, col: '#f3f5f8', open: 1, name: '← ทางออกด้านหลัง', fs: 10, nx: 3.2 },
+  { x: 16.9, y: 20.2, w: 3.1, d: 1.7, col: '#f0cfb2', name: 'ห้องเปลี่ยนเสื้อผ้า', fs: 7.5 },
+];
+const BLOOD_CHAIRS = [11.8, 13.3, 14.8];   // ตำแหน่งเดิมก่อนเลื่อนห้อง (shift -11)
+
+function buildScene() {
+  /* ground between buildings */
+  box($static, -1.5, -1.5, -.3, 45, 34, .3, '#e8edf3', { stroke: false });
+  const path = '#d6dee8';
+  flat($static, 21.5, .3, 0, .9, 7, path);
+  flat($static, 20.4, .3, 0, 1.6, .9, path);
+  flat($static, 21.5, 6.3, 0, 2.3, .9, path);
+  [[23, 10.5], [22.4, 14], [4, 23.9], [12, 24.2], [32, 17.4], [38.5, 17.2], [19.2, 28.5], [31, 30.5]].forEach(([x, y]) => tree(x, y));
+  flush($static);
+  floorText(10, 23.6, 0, 'อาคารกิตติวัฒนา', 18, '#94a3b8');
+  floorText(33.5, 15.9, 0, 'อาคารชวนชูชาติ', 18, '#94a3b8');
+
+  /* อาคารกิตติวัฒนา: ชั้น 1–2 โปร่ง, ชั้น 3 เต็ม */
+  const KITTI = [[0, 0, 20, 3.2], [14.5, 3.2, 5.5, 5.3], [0, 8.5, 20, 13.4]];   // ไม่รวมพื้นที่นอกอาคาร
+  for (const [x, y, w, d] of KITTI) facade(x, y, w, d, 2, (LAB_Z - .6) / 2, '#eef0f6');
+  door(9.2, 10.8, 21.9, 1.45);
+  for (const [x, y, w, d] of KITTI) box($static, x, y, LAB_Z - .6, w, d, .6, '#ffffff', { f1: .93, f2: .86 });
+  rooms(L_ROOMS, LAB_Z);
+  for (const r of L_ROOMS) if (r.name) floorText(r.nx ?? r.x + r.w / 2, r.y + r.d / 2, LAB_Z + .04, r.name, r.fs || 11, '#64748b', r.dir || 'x');
+
+  const z = LAB_Z;
+  /* หมวดบริการศูนย์ (x 4.35–14.5, y 8.5–15) */
+  F(4.8, 11.3, 7.5, .5, g => { box(g, 4.8, 11.3, z, 7.5, .5, .32, '#94a3b8'); quad(g, [[4.85, 11.4, z + .33], [12.25, 11.4, z + .33], [12.25, 11.7, z + .33], [4.85, 11.7, z + .33]], '#475569'); });
+  analyzer(4.8, 9, z, 2, 1.2, 1.35, '#8b5cf6');
+  analyzer(7, 9, z, 2, 1.2, 1.35, '#8b5cf6');
+  analyzer(9.4, 9, z, 2.6, 1.3, 1.5, '#6366f1');
+  desk(12.6, 9.2, z, .8, 3, '#fed7aa'); rack(12.6, 9.5, z + .72); rack(12.6, 10.4, z + .72);
+  centrifuge(12.6, 12.4, z); centrifuge(12.6, 13.4, z);
+  F(13.6, 13.55, .7, .7, g => { box(g, 13.6, 13.55, z, .7, .7, 1.1, '#fdba74'); faceScreen(g, 13.7, 14.25, z + .55, .5, .35, '#fff7ed'); });   // สถานีท่อลม
+  for (const dx of [5, 7.4, 9.8]) { desk(dx, 12.9, z, 1.8, .7); monitor(dx + .5, 12.95, z + .72); staff(dx + .9, 14.25, z, 'mt'); }
+  staff(6.1, 10.8, z, 'mt'); staff(10.7, 10.85, z, 'mt'); staff(14, 9.4, z, 'mt');
+  /* หมวดตรวจวินิจฉัยขั้นสูง */
+  analyzer(4.9, 15.4, z, 2.2, 1.2, 1.4, '#a855f7');
+  analyzer(7.4, 15.4, z, 2.2, 1.2, 1.4, '#a855f7');
+  F(10.2, 15.5, 3.8, .7, g => box(g, 10.2, 15.5, z, 3.8, .7, .8, '#e2e8f0'));
+  F(11, 17, 2.4, .9, g => box(g, 11, 17, z, 2.4, .9, .8, '#f1f5f9'));
+  staff(6.6, 17.6, z, 'mt'); staff(12.2, 16.55, z, 'mt');
+  for (const dx of [1.5, 5, 7, 12.2]) F(dx, 18.8, 1.2, .5, g => box(g, dx, 18.8, z, 1.2, .5, 1.1, '#ede9fe'));
+  /* ห้องอื่น ๆ */
+  fridge(.4, 11.6, z, '#dcfce7'); fridge(1.4, 11.6, z, '#dcfce7'); fridge(2.4, 11.6, z, '#dcfce7');
+  F(1, 9.3, 2.2, 1, g => box(g, 1, 9.3, z, 2.2, 1, .7, '#fef3c7')); chair(.4, 9.5, z, '#86efac'); chair(3.4, 9.5, z, '#86efac');
+  F(1.6, 15.6, 2.2, .8, g => { box(g, 1.6, 15.6, z, 2.2, .8, .4, '#a7f3d0'); box(g, 1.6, 15.6, z + .4, 2.2, .2, .4, '#a7f3d0'); });
+  F(10.6, 18.9, .8, .8, g => box(g, 10.6, 18.9, z, .8, .8, 1.1, '#60a5fa'));
+  for (const yy of [3, 7, 11, 15]) { F(17.3, yy, 2, .8, g => box(g, 17.3, yy, z, 2, .8, .72, '#e2e8f0')); staff(18.3, yy + 1.3, z, 'gen'); }
+  /* ลิฟต์ปลายทางเดินภายนอก */
+  flush($static);
+  box($static, 20.3, .1, 0, 1.4, 1.4, LAB_Z + .9, '#bae6fd', { op: .4 });
+
+  /* อาคารชวนชูชาติ: ชั้น 1 โปร่ง, ชั้น 2 Wellness */
+  facade(25, 0, 17, 14.5, 1, W_Z - .6, '#eaf4f1');
+  door(32.7, 34.3, 14.5, 1.3);
+  box($static, 23.6, 6, 0, 1.4, 1.4, W_Z + .9, '#bae6fd', { op: .4 });
+  withOff(W_OFF, () => {
+    box($static, -.5, 10.5, -.6, 17, 14.5, .6, '#ffffff', { f1: .93, f2: .86 });
+    rooms(W_ROOMS, 0);
+    floorText(8, 24, 0, 'THAMMASAT LIFESTYLE & WELLNESS MEDICAL CENTER · ชั้น 2', 11, '#5eead4');
+    // ห้องเจาะเลือด (ซ้ายหลัง)
+    withOff([-11, 0, 0], () => {
+      F(11.5, 11.2, 4.2, .6, g => box(g, 11.5, 11.2, 0, 4.2, .6, .85, '#e2e8f0'));
+      rack(12, 11.35, .85); rack(13.6, 11.35, .85);
+      for (const cx of BLOOD_CHAIRS) {
+        F(cx, 13.4, .8, .8, g => { box(g, cx, 13.4, 0, .8, .8, .42, '#93c5fd'); box(g, cx, 13.4, .42, .8, .14, .6, '#93c5fd'); box(g, cx + .8, 13.6, .3, .35, .5, .15, '#bfdbfe'); });
+      }
+      staff(12.95, 12.65, 0, 'phleb'); staff(15.4, 12.6, 0, 'phleb');
+    });
+    F(.3, 16.2, 2.4, .5, g => box(g, .3, 16.2, 0, 2.4, .5, .72, '#fde68a'));   // จุดรอนำส่ง
+    // ประเมินสุขภาพ
+    F(5.6, 11.5, .9, .9, g => { box(g, 5.6, 11.5, 0, .9, .9, .12, '#cbd5e1'); box(g, 5.95, 11.55, .12, .2, .2, 1.1, '#94a3b8'); box(g, 5.75, 11.5, 1.2, .6, .3, .25, '#e2e8f0'); });
+    F(7.3, 11.6, 3, 1.4, g => { box(g, 7.3, 11.6, 0, 1.3, .7, .03, '#86efac', { stroke: false }); box(g, 8.9, 11.6, 0, 1.3, .7, .03, '#fcd34d', { stroke: false }); box(g, 7.3, 12.5, 0, 1.3, .7, .03, '#93c5fd', { stroke: false }); });
+    bench(6, 15.8, 0, 3.6, '#a7f3d0');
+    staff(9.6, 13.1, 0, 'coach'); plant(10.4, 16.2, 0);
+    // พบแพทย์ (ขวาหลัง)
+    withOff([11, 0, 0], () => {
+      desk(.9, 12.4, 0, 2.6, 1); monitor(1.6, 12.45, .72);
+      chair(1.4, 13.9, 0, '#fda4af'); chair(2.5, 13.9, 0, '#fda4af');
+      staff(2.3, 11.85, 0, 'doc'); plant(4.3, 16.1, 0);
+    });
+    // ลงทะเบียน (ขวาหน้า)
+    withOff([11, 0, 0], () => {
+      kiosk(.8, 17.9, 0); kiosk(1.7, 17.9, 0); kiosk(2.6, 17.9, 0);
+      desk(3.6, 19, 0, .9, 2, '#bfdbfe');
+      staff(4.15, 21.6, 0, 'staff');
+    });
+    // พื้นที่รอ
+    bench(6, 18.6, 0, 4.2, '#fcd34d'); bench(6, 20.6, 0, 4.2, '#fcd34d');
+    F(7.2, 17.6, 2, .1, g => { box(g, 7.2, 17.62, .9, 2, .08, 1, '#1e293b'); faceScreen(g, 7.3, 17.7, 1, 1.8, .8, '#0f766e'); });
+    plant(10.4, 22.2, 0);
+    // วัดสัญญาณชีพ (ซ้ายหน้า)
+    withOff([-11, 0, 0], () => {
+      desk(11.7, 18.3, 0, 2.4, .8, '#bae6fd'); monitor(12.4, 18.35, .72);
+      F(14.8, 18.2, .6, .6, g => { box(g, 14.8, 18.2, 0, .6, .6, .08, '#94a3b8'); box(g, 15, 18.25, .08, .2, .1, 1, '#64748b'); });
+      staff(14.4, 19.6, 0, 'nurse');
+    });
+    flush($static);
+  });
+
+  /* อาคารศูนย์การแพทย์ (ย่อระยะ): ชั้น 1 หมวดงานบริหารสิ่งส่งตรวจฯ + อาคารหอผู้ป่วยด้านหลัง */
+  box($static, 20.7, 24, -.3, 8.6, 6.3, .3, '#ffffff', { f1: .93, f2: .86 });
+  // อาคารหอผู้ป่วย
+  box($static, 21, 24, 0, 8, 1.6, 6.4, '#f7ebe0', { f1: .96, f2: .87 });
+  for (let f = 1; f < 4; f++) {
+    const z0 = f * 1.6;
+    quad($static, [[21, 25.6, z0], [29, 25.6, z0], [29, 25.6, z0 + .08], [21, 25.6, z0 + .08]], '#e4cdb8');
+    quad($static, [[29, 24, z0], [29, 25.6, z0], [29, 25.6, z0 + .08], [29, 24, z0 + .08]], '#d9bfa8');
+    for (let x = 21.35; x < 28.7; x += .82) quad($static, [[x, 25.6, z0 + .42], [x + .52, 25.6, z0 + .42], [x + .52, 25.6, z0 + 1.2], [x, 25.6, z0 + 1.2]], '#cfe6f5', { stroke: '#a9c6db', 'stroke-width': .4 });
+    for (const y of [24.25, 24.95]) quad($static, [[29, y, z0 + .42], [29, y + .4, z0 + .42], [29, y + .4, z0 + 1.2], [29, y, z0 + 1.2]], '#b8d6ea', { stroke: '#9bbbd2', 'stroke-width': .4 });
+  }
+  box($static, 21, 24, 6.4, 8, 1.6, .14, '#ead6c4');
+  box($static, 21.1, 24.1, 6.54, 7.8, .1, .22, '#ead6c4', { stroke: false });
+  box($static, 23.4, 24.6, 6.54, 3.2, .14, .62, '#ea580c');
+  {
+    const [a, b] = iso(25, 24.74, 6.85);
+    const t = el('text', { transform: `matrix(${CX},0.5,0,1,${a.toFixed(1)},${b.toFixed(1)})`, 'font-size': 12.5, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'letter-spacing': 3 }, $static);
+    t.textContent = 'WARD';
+  }
+  // ชั้น 1: หมวดงานบริหารสิ่งส่งตรวจและบริการศูนย์การแพทย์
+  rooms([{ x: 21, y: 25.6, w: 8, d: 4.4, col: '#fff1e3' }], 0);
+  F(21.5, 26.2, 3.6, .6, g => { box(g, 21.5, 26.2, 0, 3.6, .6, .78, '#f1d6b4'); box(g, 21.5, 26.72, .78, 3.6, .08, .06, '#e0bb90', { stroke: false }); });
+  monitor(21.9, 26.25, .78); monitor(23.5, 26.25, .78); rack(24.3, 26.4, .78);
+  staff(22.3, 25.95, 0, 'staff'); staff(23.9, 25.95, 0, 'staff');
+  F(22, 28.1, 2.8, 1, g => {
+    box(g, 22, 28.1, 0, 2.8, 1, .7, '#e7edf3');
+    const bins = ['#a78bfa', '#f87171', '#fbbf24', '#4ade80', '#60a5fa', '#a78bfa', '#fbbf24', '#f87171'];
+    bins.forEach((c, i) => box(g, 22.15 + (i % 4) * .66, 28.22 + Math.floor(i / 4) * .45, .7, .5, .34, .18, c));
+  });
+  staff(23.4, 29.55, 0, 'mt'); chair(25.3, 28.4, 0, '#fdba74');
+  F(28.15, 25.9, .75, .75, g => {
+    box(g, 28.15, 25.9, 0, .75, .75, 1.15, '#fed7aa');
+    box(g, 28.15, 25.9, 1.15, .75, .75, .1, '#ea580c');
+    faceScreen(g, 28.27, 26.65, .55, .5, .38, '#fff7ed');
+  });
+  staff(27.5, 27.2, 0, 'staff');
+  plant(28.4, 29.4, 0); plant(21.3, 29.5, 0);
+  for (const zw of WARD_Z) F(29.45, 24.55, .5, .5, g => { box(g, 29.45, 24.55, zw - .3, .5, .5, .55, '#fed7aa'); box(g, 29.45, 24.55, zw + .25, .5, .5, .07, '#ea580c', { stroke: false }); });
+  flush($static);
+  floorText(25, 31.2, 0, 'อาคารศูนย์การแพทย์', 18, '#94a3b8');
+
+  /* ท่อลม: อาคารศูนย์การแพทย์ → อาคารกิตติวัฒนา ชั้น 3 */
+  const pipe = PIPE_F1.map(p => iso(...p).map(n => n.toFixed(1)).join(',')).join(' ');
+  el('polyline', { points: pipe, fill: 'none', stroke: '#fb923c', 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .85 }, $static);
+  el('polyline', { points: pipe, fill: 'none', stroke: '#fff7ed', 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-dasharray': '3 5', class: 'flow' }, $static);
+}
+const WARD_Z = [2.4, 4, 5.6];
+const PIPE_UP = [[29.35, 24.8, 6.9], [29.35, 23.6, 6.9], [15.7, 23.6, 6.9], [15.7, 13.9, 6.9], [13.95, 13.9, 6.9], [13.95, 13.9, LAB_Z + 1.15]];
+const PIPE_F1 = [[28.55, 26.25, 1.1], [29.35, 26.25, 1.1], [29.35, 24.8, 1.1], ...PIPE_UP];
+
+/* ---------- labels ---------- */
+function label(x, y, z, r, lift = 2.3) {
+  const [a, b] = iso(x, y, z);
+  const g = el('g', { transform: `translate(${a.toFixed(1)},${(b - lift * S).toFixed(1)})` }, $labels);
+  const c = r.c || (r.n ? (r.lab ? '#7c3aed' : '#0d9488') : '#94a3b8');
+  el('line', { x1: 0, y1: 0, x2: 0, y2: lift * S, stroke: c, 'stroke-width': 1, 'stroke-dasharray': '2 2', opacity: .6 }, g);
+  el('circle', { cx: 0, cy: lift * S, r: 2.5, fill: c }, g);
+  const pill = el('rect', { y: -34, height: 32, rx: 9, fill: '#fff', stroke: c, 'stroke-opacity': .35, 'stroke-width': 1 }, g);
+  const t1 = el('text', { y: -19.5, 'font-size': 11.5, 'font-weight': 600, fill: '#0f172a' }, g); t1.textContent = r.th;
+  const t2 = el('text', { y: -7.5, 'font-size': 9.5, fill: '#64748b' }, g); t2.textContent = r.en;
+  let bw = 0, nt;
+  if (r.n) {
+    nt = el('text', { y: -14.3, 'font-size': 10.5, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle' }, g); nt.textContent = r.n;
+    bw = Math.max(16, nt.getComputedTextLength() + 9);
+  }
+  const pad = r.n ? bw + 14 : 9;
+  const w = Math.max(t1.getComputedTextLength(), t2.getComputedTextLength()) + pad + 9;
+  pill.setAttribute('x', -w / 2); pill.setAttribute('width', w);
+  t1.setAttribute('x', -w / 2 + pad); t2.setAttribute('x', -w / 2 + pad);
+  if (r.n) {
+    const bx = -w / 2 + 6;
+    g.insertBefore(el('rect', { x: bx, y: -26, width: bw, height: 16, rx: 8, fill: c }), nt);
+    nt.setAttribute('x', bx + bw / 2);
+  }
+}
+function buildLabels() {
+  label(9.4, 11.6, LAB_Z, { n: '6–8', lab: 1, th: 'หมวดบริการศูนย์', en: 'รับสิ่งส่งตรวจ · ตรวจวิเคราะห์ · รายงานผล' }, 3);
+  label(9.4, 16.6, LAB_Z, { n: 0, th: 'หมวดตรวจวินิจฉัยขั้นสูง', en: 'Advanced diagnostics' }, 2.2);
+  label(21, .8, LAB_Z + .9, { n: '5ก', lab: 1, th: 'เจ้าหน้าที่เดินนำส่งสิ่งส่งตรวจ', en: 'ชวนชูชาติ ชั้น 2 → กิตติวัฒนา ชั้น 3' }, 1.1);
+  label(24, 24.8, 7.2, { n: 0, c: '#ea580c', th: 'หอผู้ป่วย (Ward)', en: 'ส่งตรวจทางท่อลมจากทุกชั้น' }, .7);
+  label(21.4, 30, 0, { n: '5ข', c: '#ea580c', th: 'หมวดงานบริหารสิ่งส่งตรวจ', en: 'และบริการศูนย์การแพทย์ · ชั้น 1' }, 1.1);
+  withOff(W_OFF, () => { for (const r of W_ROOMS) label(r.x + r.w / 2, r.y + r.d * .4, 0, r, 2.3); });
+}
+
+/* ---------- simulation ---------- */
+const STEPS = {
+  1: ['ลงทะเบียน / KIOSK', 'ยืนยันตัวตน รับบัตรคิว', 'p'],
+  2: ['รอเรียกคิว', 'พื้นที่รอ', 'p'],
+  3: ['ซักประวัติ & วัดสัญญาณชีพ', 'น้ำหนัก ความดัน ชีพจร', 'p'],
+  4: ['เจาะเลือด', 'ยืนยันตัวตน ติดฉลากหลอด', 'p'],
+  5: ['เจ้าหน้าที่เดินนำส่ง', 'จาก Wellness อาคารชวนชูชาติ ชั้น 2', 'l'],
+  '5b': ['ส่งทางท่อลม', 'จาก Ward และหมวดงานบริหารสิ่งส่งตรวจฯ ชั้น 1 อาคารศูนย์การแพทย์', 'o'],
+  6: ['รับสิ่งส่งตรวจ & เตรียมตัวอย่าง', 'หมวดบริการศูนย์', 'l'],
+  7: ['ตรวจวิเคราะห์อัตโนมัติ', 'โลหิตวิทยา เคมีคลินิก ภูมิคุ้มกัน', 'l'],
+  8: ['ตรวจสอบ & รายงานผล', 'นักเทคนิคการแพทย์ยืนยันผลใน LIS', 'l'],
+  9: ['แพทย์แจ้งผล & ให้คำแนะนำ', 'วางแผนดูแลสุขภาพ', 'p'],
+};
+const STEP_ORDER = [
+  ['p', 'ผู้รับบริการ · อาคารชวนชูชาติ ชั้น 2'], 1, 2, 3, 4,
+  ['l', 'นำส่งสิ่งส่งตรวจถึงห้องแล็บ'], 5, '5b',
+  ['l', 'งานห้องปฏิบัติการ · อาคารกิตติวัฒนา ชั้น 3'], 6, 7, 8,
+  ['p', 'กลับมาที่ผู้รับบริการ Wellness'], 9,
+];
+const STEP_NUM = { 5: '5ก', '5b': '5ข' };
+const SHIRTS = ['#f97316', '#ef4444', '#eab308', '#3b82f6', '#a855f7', '#ec4899', '#10b981', '#64748b', '#06b6d4'];
+const PANTS = ['#334155', '#1e3a8a', '#475569', '#78350f', '#1f2937'];
+
+let simT = 0, speed = 1, paused = false, spawnIn = 0.5, nextHN = 1, slot = 0;
+const stats = { visits: 0, received: 0, reported: 0, reportedW: 0, tatSum: 0, recvW: 0, recvWard: 0, recvF1: 0 };
+const ents = [], pulses = [];
+
+class Mover {
+  constructor(wps, spd) { this.wps = wps; this.pos = [...wps[0].p]; this.i = 1; this.spd = spd; this.state = 'move'; this.wait = 0; this.phase = 0; this.seed = Math.random() * 9; }
+  get step() { for (let j = this.i; j < this.wps.length; j++) if (this.wps[j].step != null) return this.wps[j].step; return null; }
+  get moving() { return this.state === 'move'; }
+  advance() { const wp = this.wps[this.i]; wp.leave && wp.leave(this); this.i++; this.state = 'move'; if (this.i >= this.wps.length) this.fading = 1; }
+  update(dt) {
+    if (this.fading) return;
+    const wp = this.wps[this.i];
+    if (this.state === 'wait') {
+      if (wp.waitFor && !this[wp.waitFor]) return;
+      this.wait -= dt;
+      if (this.wait <= 0) this.advance();
+      return;
+    }
+    const t = wp.p, d = [t[0] - this.pos[0], t[1] - this.pos[1], t[2] - this.pos[2]];
+    const dist = Math.hypot(...d), mv = this.spd * (wp.slow || 1) * dt;
+    if (dist <= mv) {
+      this.pos = [...t];
+      wp.arrive && wp.arrive(this);
+      if (wp.wait || wp.waitFor) { this.state = 'wait'; this.wait = wp.wait || 0; } else this.advance();
+    } else {
+      for (let k = 0; k < 3; k++) this.pos[k] += d[k] / dist * mv;
+      this.phase += dt * 9;
+    }
+  }
+}
+
+function personEntity(e, look) {
+  e.g = el('g', {}, $dyn);
+  e.ring = el('ellipse', { rx: 10, ry: 4.5, fill: 'none', stroke: '#f59e0b', 'stroke-width': 2, opacity: 0 }, e.g);
+  const body = el('g', {}, e.g);
+  body.innerHTML = personMarkup(look);
+  e.l1 = body.querySelector('.l1'); e.l2 = body.querySelector('.l2'); e.bd = body.querySelector('.bd');
+}
+
+class Patient extends Mover {
+  constructor() {
+    const ch = pick(BLOOD_CHAIRS) - 11;
+    const E = [8, 24.4, 0];
+    const w = (p, o = {}) => ({ p: Ww(...p), ...o });
+    super([
+      w(E),
+      w([rnd(12.4, 14.6), rnd(19.3, 20), 0], { wait: rnd(1.8, 2.8), step: 1 }),
+      w([rnd(6.4, 9.8), pick([19.6, 21.6]) + rnd(.1, .4), 0], { wait: rnd(2, 4), step: 2 }),
+      w([2.1, rnd(19.7, 20.3), 0], { wait: 2.4, step: 3 }),
+      w([2.6, 17.3, 0]),
+      w([ch + .4, 14.05, 0], { wait: 2.8, step: 4, leave: me => me.spawnSpecimen() }),
+      w([5.4, 14.6, 0]),
+      w([rnd(6, 10), rnd(13.6, 15.2), 0], { waitFor: 'resultReady', wait: 1.2, step: 'R' }),
+      w([rnd(12.5, 14.2), 15, 0], { wait: 3, step: 9, arrive: me => { me.check = 2.2; } }),
+      w([10.8, 17.2, 0], { step: 'X' }),
+      w([8, 22.6, 0], { step: 'X' }),
+      w(E, { step: 'X' }),
+    ], 2.3);
+    this.hn = 'HN-' + String(nextHN++).padStart(4, '0');
+    this.born = simT; this.alpha = 0;
+    personEntity(this, { shirt: pick(SHIRTS), pants: pick(PANTS), skin: pick(SKIN), hair: pick(HAIR) });
+    this.bubble = el('g', { opacity: 0 }, this.g);
+    this.bubble.innerHTML = `<circle cx="9" cy="-36" r="7" fill="#22c55e"/><path d="M5.5,-36l2.4,2.4l4.4,-4.6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    stats.visits++;
+  }
+  spawnSpecimen() { this.spec = new Specimen(this); ents.push(this.spec); }
+}
+
+const labPath = () => [
+  { p: [rnd(12.75, 13.25), rnd(9.7, 11.6), LAB_Z + 1.05], wait: 2.6, step: 6 },
+  { p: [12, 11.55, LAB_Z + .5], step: 7 },
+  { p: [10.7, 11.55, LAB_Z + .5], wait: 2.6, step: 7 },
+  { p: [8, 11.55, LAB_Z + .5], wait: 1.8, step: 7 },
+  { p: [5.8, 11.55, LAB_Z + .5], wait: 1.8, step: 7, leave: me => me.emit() },
+  { p: [4.9, 11.55, LAB_Z + .5], step: 'S' },
+];
+class Specimen extends Mover {
+  // pt: ผู้รับบริการ Wellness (เดินส่ง) หรือ null เมื่อมาทางท่อลมจากอาคารศูนย์การแพทย์ (srcPt = จุดส่งผลกลับ)
+  constructor(pt, srcPt = null) {
+    const s = slot++ % 7;
+    const head = pt
+      ? [{ p: [pt.pos[0], pt.pos[1] - .3, pt.pos[2] + .9] },
+         { p: Ww(.5 + s * .3, 16.45, .95), waitFor: 'delivered', step: 5, arrive: me => { me.atRack = true; } }]
+      : [{ p: [13.95 + rnd(-.2, .2), 13.9 + rnd(-.2, .2), LAB_Z + 1.15] }];
+    super([...head, ...labPath()], 3.2);
+    this.pt = pt; this.srcPt = srcPt; this.tDraw = simT; this.alpha = 0;
+    this.g = el('g', {}, $dyn);
+    const cap = pick(['#7c3aed', '#7c3aed', '#dc2626', '#f59e0b']);
+    this.g.innerHTML = `<circle r="11" cy="-5" fill="url(#${pt ? 'glow' : 'glowO'})"/><g transform="translate(0,-5)"><rect x="-2.4" y="-7" width="4.8" height="13" rx="2.4" fill="#fff" stroke="${pt ? '#64748b' : '#ea580c'}" stroke-width=".8"/><rect x="-1.7" y="-1" width="3.4" height="6.2" rx="1.6" fill="#dc2626"/><rect x="-2.9" y="-9.5" width="5.8" height="3.4" rx="1.2" fill="${cap}"/></g>`;
+  }
+  update(dt) {
+    if (this.carrier) {
+      const c = this.carrier.pos;
+      this.pos = [c[0] - .3 + this.cslot * .17, c[1] - .1, c[2] + 1.05];
+      return;
+    }
+    super.update(dt);
+  }
+  emit() {
+    const pt = this.pt, desk = [8.3, 12.9, LAB_Z + 1.4];
+    pulses.push(new Pulse([6.4, 9.6, LAB_Z + 1.6], desk, .9, '#8b5cf6', 0, () => {
+      pulses.push(new Ring(desk, 1.8, () => {
+        pulses.push(new Pulse(desk, pt ? null : this.srcPt, pt ? 3 : 2.4, '#22c55e', pt ? 6 : 3, () => {
+          stats.reported++;
+          if (!pt) return;
+          pt.resultReady = true;
+          stats.reportedW++;
+          stats.tatSum += (simT - this.tDraw) * SIM_MIN;
+        }, pt));
+      }));
+    }));
+  }
+}
+
+/* เจ้าหน้าที่เดินนำส่ง: รวมหลอดจากจุดรอนำส่ง แล้วเดินไปอาคารกิตติวัฒนา ชั้น 3 */
+const COURIER_OUT = [
+  { p: Ww(1.6, 15.7, 0) },
+  { p: Ww(.2, 17.2, 0) },
+  { p: [24.3, 6.7, W_Z] },
+  { p: [24.3, 6.7, 0], slow: .45 },
+  { p: [21.95, 6.7, 0] },
+  { p: [21.95, .8, 0] },
+  { p: [21, .8, 0] },
+  { p: [21, .8, LAB_Z], slow: .35 },
+  { p: [19.3, .8, LAB_Z] },
+  { p: [15.7, .8, LAB_Z] },
+  { p: [15.7, 2.4, LAB_Z] },
+  { p: [15.7, 10.5, LAB_Z] },
+  { p: [14.1, 10.5, LAB_Z], wait: 1.4 },
+];
+const COURIER_BACK = [...COURIER_OUT].reverse().map((w, i, a) => ({ p: w.p, slow: (a[i - 1] || {}).slow }));
+COURIER_BACK[COURIER_BACK.length - 1].wait = .1;
+
+class Courier {
+  constructor() {
+    this.pos = [...COURIER_OUT[0].p]; this.phase = 0; this.seed = 1; this.idle = 0; this.load = []; this.trip = null;
+    personEntity(this, { ...ROLE.courier, skin: SKIN[1], hair: HAIR[0] });
+  }
+  get moving() { return !!this.trip && this.trip.moving; }
+  go(wps, done) { this.trip = new Mover(wps.map(w => ({ ...w })), 2.5); this.trip.pos = [...this.pos]; this.done = done; }
+  get carrying() { return this.load.length > 0; }
+  update(dt) {
+    if (this.trip) {
+      this.trip.update(dt); this.pos = this.trip.pos; this.phase = this.trip.phase;
+      if (this.trip.fading) { this.trip = null; this.done(); }
+      return;
+    }
+    this.idle += dt;
+    const ready = ents.filter(e => e instanceof Specimen && e.atRack && !e.carrier && !e.delivered);
+    if (ready.length && (this.idle > 6 || ready.length >= 3)) {
+      ready.forEach((s, i) => { s.carrier = this; s.cslot = i; s.atRack = false; });
+      this.load = ready;
+      this.go(COURIER_OUT, () => {
+        for (const s of this.load) { s.carrier = null; s.delivered = true; stats.received++; stats.recvW++; }
+        this.load = [];
+        this.go(COURIER_BACK, () => { this.idle = 0; });
+      });
+    }
+  }
+}
+const courier = new Courier();
+
+/* กระสวยท่อลมจากอาคารศูนย์การแพทย์ */
+class Capsule {
+  constructor(src) {
+    this.src = src;
+    const zw = pick(WARD_Z);
+    this.pts = src === 'ward' ? [[29.35, 24.8, zw], ...PIPE_UP] : PIPE_F1;
+    this.back = src === 'ward' ? [25, 25.6, zw + .8] : [23.4, 28.6, 1];
+    this.n = 1 + Math.floor(Math.random() * 3);
+    this.i = 0; this.pos = [...this.pts[0]]; this.wait = 1.6; this.step = '5b';
+    this.g = el('g', {}, $fx);
+    this.g.innerHTML = `<circle r="11" fill="url(#glowO)"/><rect x="-6.5" y="-3.6" width="13" height="7.2" rx="3.6" fill="${src === 'ward' ? '#f97316' : '#ea580c'}" stroke="#fff" stroke-width="1.3"/>`;
+  }
+  update(dt) {
+    if (this.wait > 0) { this.wait -= dt; return; }
+    let mv = dt * 7.5;
+    while (mv > 0 && this.i < this.pts.length - 1) {
+      const t = this.pts[this.i + 1], d = [t[0] - this.pos[0], t[1] - this.pos[1], t[2] - this.pos[2]], dist = Math.hypot(...d);
+      if (dist <= mv) { this.pos = [...t]; this.i++; mv -= dist; }
+      else { for (let k = 0; k < 3; k++) this.pos[k] += d[k] / dist * mv; mv = 0; }
+    }
+    if (this.i >= this.pts.length - 1 && !this.gone) {
+      this.gone = true; this.g.remove();
+      for (let k = 0; k < this.n; k++) ents.push(new Specimen(null, this.back));
+      stats.received += this.n;
+      stats[this.src === 'ward' ? 'recvWard' : 'recvF1'] += this.n;
+    }
+  }
+  render() { const [x, y] = iso(...this.pos); this.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`); }
+}
+const caps = [];
+let capIn = 2;
+
+class Pulse {
+  constructor(a, b, dur, col, lift, done, follow) {
+    this.a = a; this.b0 = b; this.dur = dur; this.t = 0; this.col = col; this.lift = lift; this.done = done; this.follow = follow;
+    this.path = el('path', { fill: 'none', stroke: col, 'stroke-width': 2, 'stroke-dasharray': '6 6', class: 'flow', opacity: .7 }, $fx);
+    this.dot = el('g', {}, $fx);
+    this.dot.innerHTML = `<circle r="12" fill="${col === '#22c55e' ? 'url(#glowG)' : 'url(#glow)'}"/><circle r="4.5" fill="${col}" stroke="#fff" stroke-width="1.5"/>`;
+  }
+  get result() { return this.col === '#22c55e'; }
+  pts() {
+    const a = iso(...this.a);
+    const b = this.follow ? iso(this.follow.pos[0], this.follow.pos[1], this.follow.pos[2] + 1.6) : iso(...this.b0);
+    return [a, [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - this.lift * S], b];
+  }
+  update(dt) {
+    this.t += dt / this.dur;
+    if (this.t >= 1 && !this.fin) { this.fin = true; this.done && this.done(); this.fade = 1; }
+    if (this.fin) { this.fade -= dt * 1.8; if (this.fade <= 0) { this.path.remove(); this.dot.remove(); this.gone = true; } }
+  }
+  render() {
+    const [a, m, b] = this.pts(), t = Math.min(1, this.t), u = 1 - t;
+    this.path.setAttribute('d', `M${a[0].toFixed(1)},${a[1].toFixed(1)}Q${m[0].toFixed(1)},${m[1].toFixed(1)} ${b[0].toFixed(1)},${b[1].toFixed(1)}`);
+    const x = u * u * a[0] + 2 * u * t * m[0] + t * t * b[0], y = u * u * a[1] + 2 * u * t * m[1] + t * t * b[1];
+    this.dot.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+    const o = this.fin ? Math.max(0, this.fade) : 1;
+    this.path.setAttribute('opacity', (.7 * o).toFixed(2)); this.dot.setAttribute('opacity', o.toFixed(2));
+  }
+}
+class Ring {
+  constructor(p, dur, done) {
+    const q = iso(...p); this.dur = dur; this.t = 0; this.done = done;
+    this.g = el('g', { transform: `translate(${q[0].toFixed(1)},${q[1].toFixed(1)})` }, $fx);
+    this.c = el('circle', { r: 6, fill: 'none', stroke: '#8b5cf6', 'stroke-width': 2 }, this.g);
+    this.ck = el('g', { opacity: 0 }, this.g);
+    this.ck.innerHTML = `<circle r="8" fill="#8b5cf6"/><path d="M-3.5,0l2.4,2.4l4.4,-4.6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  update(dt) { this.t += dt / this.dur; if (this.t >= 1 && !this.gone) { this.g.remove(); this.gone = true; this.done(); } }
+  render() {
+    const k = (this.t * 2.2) % 1;
+    this.c.setAttribute('r', (6 + k * 12).toFixed(1)); this.c.setAttribute('opacity', (1 - k).toFixed(2));
+    this.ck.setAttribute('opacity', this.t > .55 ? 1 : 0);
+  }
+}
+
+/* หลอดบนสายพานอัตโนมัติ (บรรยากาศ) */
+const track = [];
+for (let i = 0; i < 6; i++) {
+  const g = el('g', {}, $dyn);
+  g.innerHTML = `<rect x="-1.8" y="-10" width="3.6" height="10" rx="1.8" fill="#fff" stroke="#94a3b8" stroke-width=".6"/><rect x="-1.3" y="-5" width="2.6" height="4.6" rx="1.2" fill="#ef4444"/><rect x="-2.2" y="-12" width="4.4" height="2.6" rx="1" fill="${pick(['#7c3aed', '#f59e0b', '#16a34a', '#dc2626'])}"/>`;
+  track.push({ g, x: 12.1 - i * 1.2 });
+}
+
+/* ---------- loop ---------- */
+const clockMin = () => 7 * 60 + 30 + simT * SIM_MIN;
+function tick(dt) {
+  simT += dt;
+  spawnIn -= dt;
+  const live = ents.filter(e => e instanceof Patient).length;
+  if (spawnIn <= 0 && live < 11) { ents.push(new Patient()); spawnIn = rnd(3.8, 6.5); }
+  for (const e of ents) e.update(dt);
+  courier.update(dt);
+  capIn -= dt;
+  if (capIn <= 0) { caps.push(new Capsule(Math.random() < .6 ? 'ward' : 'f1')); capIn = rnd(4.5, 8.5); }
+  for (const c of caps) c.update(dt);
+  for (let i = caps.length - 1; i >= 0; i--) if (caps[i].gone) caps.splice(i, 1);
+  for (const p of pulses) p.update(dt);
+  for (let i = pulses.length - 1; i >= 0; i--) if (pulses[i].gone) pulses.splice(i, 1);
+  for (const t of track) { t.x -= dt * 1.1; if (t.x < 4.95) t.x += 7.2; }
+  for (const e of ents) {
+    if (e.fading) { e.fadeOut = (e.fadeOut ?? 1) - dt * 1.6; if (e.fadeOut <= 0) { e.gone = true; e.g.remove(); } }
+    else e.alpha = Math.min(1, e.alpha + dt * 2);
+    if (e.check > 0) e.check -= dt;
+  }
+  for (let i = ents.length - 1; i >= 0; i--) if (ents[i].gone) ents.splice(i, 1);
+  if (clockMin() >= 16 * 60) { simT = 0; for (const k in stats) stats[k] = 0; }
+}
+
+let featured = null;
+function render(now) {
+  const order = [];
+  for (const e of [...ents, courier]) {
+    const [x, y] = iso(...e.pos);
+    e.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+    if (e !== courier) e.g.setAttribute('opacity', (e.fading ? Math.max(0, e.fadeOut ?? 1) : e.alpha).toFixed(2));
+    if (e.l1) animatePerson(e, now);
+    if (e instanceof Patient) {
+      e.ring.setAttribute('opacity', e === featured ? (.55 + .45 * Math.sin(now * 5)).toFixed(2) : 0);
+      e.bubble.setAttribute('opacity', e.check > 0 ? 1 : 0);
+    }
+    order.push([e.pos[0] + e.pos[1] + e.pos[2] * .01 + (e instanceof Specimen ? .05 : 0), e.g]);
+  }
+  for (const t of track) {
+    const [x, y] = iso(t.x, 11.55, LAB_Z + .33);
+    t.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+    order.push([t.x + 11.55, t.g]);
+  }
+  order.sort((a, b) => a[0] - b[0]).forEach(o => $dyn.appendChild(o[1]));
+  for (const p of pulses) p.render();
+  for (const c of caps) c.render();
+  renderTags();
+}
+
+/* featured tags */
+const tagP = el('g', {}, $tags), tagS = el('g', {}, $tags);
+function mkTag(g, col) {
+  const r = el('rect', { y: -15, height: 16, rx: 8, fill: col }, g);
+  const t = el('text', { y: -4, 'font-size': 10, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle' }, g);
+  return { r, t };
+}
+const TP = mkTag(tagP, '#f59e0b'), TS = mkTag(tagS, '#7c3aed');
+function setTag(T, g, txt, x, y, show) {
+  g.setAttribute('opacity', show ? 1 : 0);
+  if (!show) return;
+  if (T.t.textContent !== txt) { T.t.textContent = txt; const w = T.t.getComputedTextLength() + 14; T.r.setAttribute('x', -w / 2); T.r.setAttribute('width', w); }
+  g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+}
+function renderTags() {
+  if (!featured || featured.gone || featured.step === 'X') {
+    featured = ents.filter(e => e instanceof Patient && e.step !== 'X' && e.alpha > .5).sort((a, b) => a.born - b.born)[0] || null;
+  }
+  const f = featured;
+  if (f) { const [x, y] = iso(...f.pos); setTag(TP, tagP, f.hn, x, y - 38, true); } else setTag(TP, tagP, '', 0, 0, false);
+  const s = f && f.spec && !f.spec.fading ? f.spec : null;
+  if (s) { const [x, y] = iso(...s.pos); setTag(TS, tagS, 'หลอดเลือด ' + f.hn, x, y - 24, true); } else setTag(TS, tagS, '', 0, 0, false);
+}
+
+/* ---------- side panel ---------- */
+const $steps = document.getElementById('steps');
+const stepEls = {};
+for (const it of STEP_ORDER) {
+  const li = document.createElement('li');
+  if (Array.isArray(it)) { li.className = 'grp ' + it[0]; li.textContent = it[1]; $steps.appendChild(li); continue; }
+  const [name, sub, grp] = STEPS[it];
+  li.className = 'step ' + grp;
+  li.innerHTML = `<span class="n">${STEP_NUM[it] || it}</span><span class="tx">${name}<small>${sub}</small></span><span class="c">0</span>`;
+  $steps.appendChild(li); stepEls[it] = li;
+}
+
+const fmt = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(Math.floor(m % 60)).padStart(2, '0')}`;
+function stepOf(f) {
+  if (!f) return null;
+  if (f.step === 'R') return f.resultReady ? 9 : (f.spec && !f.spec.fading ? f.spec.step : 8);
+  return f.step;
+}
+function updateUI() {
+  document.getElementById('clock').textContent = fmt(clockMin());
+  document.getElementById('k1').textContent = stats.visits;
+  document.getElementById('k2').textContent = stats.received;
+  document.getElementById('k3').textContent = stats.reported;
+  document.getElementById('k4').innerHTML = stats.reportedW ? `${Math.round(stats.tatSum / stats.reportedW)} <small>นาที</small>` : '–';
+  const srcN = [stats.recvW, stats.recvWard, stats.recvF1], srcMax = Math.max(1, ...srcN);
+  srcN.forEach((n, i) => { document.getElementById('s' + (i + 1)).textContent = n; document.getElementById('b' + (i + 1)).style.width = (n / srcMax * 100) + '%'; });
+  const cnt = {};
+  for (const e of ents) { if (e.fading) continue; const s = e.step; if (typeof s === 'number') cnt[s] = (cnt[s] || 0) + 1; }
+  for (const p of pulses) if (!p.gone && (p instanceof Ring || (p.result && !p.fin))) cnt[8] = (cnt[8] || 0) + 1;
+  cnt['5b'] = caps.length;
+  const fs = stepOf(featured);
+  for (const k in stepEls) {
+    const n = cnt[k] || 0;
+    stepEls[k].classList.toggle('on', n > 0);
+    stepEls[k].classList.toggle('me', +k === fs);
+    stepEls[k].querySelector('.c').textContent = n;
+  }
+  const f = featured;
+  document.getElementById('tw').textContent = f ? 'ผู้รับบริการ ' + f.hn : 'รอผู้รับบริการรายแรก';
+  let st = '–', sp = '';
+  if (f) {
+    if (f.step === 'R') {
+      st = 'รอผลตรวจ — ระหว่างนี้ประเมินสุขภาพ & ไลฟ์สไตล์';
+      if (f.resultReady) sp = 'ผลตรวจพร้อมแล้ว ส่งถึงแพทย์';
+      else if (fs === 5) sp = f.spec && f.spec.carrier ? 'สิ่งส่งตรวจ: เจ้าหน้าที่กำลังเดินนำส่งไปอาคารกิตติวัฒนา' : 'สิ่งส่งตรวจ: รอเจ้าหน้าที่มารับนำส่ง';
+      else if (STEPS[fs]) sp = `สิ่งส่งตรวจ: ขั้นที่ ${fs} ${STEPS[fs][0]}`;
+    } else if (STEPS[f.step]) st = `ขั้นที่ ${f.step} ${STEPS[f.step][0]}`;
+  }
+  document.getElementById('ts').textContent = st;
+  document.getElementById('tsp').textContent = sp;
+  document.getElementById('tb').style.width = (fs ? (fs / 9) * 100 : 0) + '%';
+}
+
+/* ---------- controls ---------- */
+document.getElementById('speed').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.a) { paused = !paused; b.textContent = paused ? '▶ เล่น' : '⏸ หยุด'; b.classList.toggle('on', paused); return; }
+  speed = +b.dataset.s;
+  document.querySelectorAll('#speed [data-s]').forEach(x => x.classList.toggle('on', x === b));
+});
+
+/* ---------- boot ---------- */
+function fit() {
+  const bb = document.getElementById('world').getBBox();
+  const pad = 12;
+  document.getElementById('scene').setAttribute('viewBox', `${bb.x - pad} ${bb.y - pad} ${bb.width + pad * 2} ${bb.height + pad * 2}`);
+}
+buildScene();
+const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+fontsReady.then(() => {
+  buildLabels();
+  fit();
+  let last = performance.now(), uiAcc = 0;
+  function frame(now) {
+    let dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (!paused) { dt *= speed; tick(dt); }
+    render(now / 1000);
+    uiAcc += dt; if (uiAcc > .2) { uiAcc = 0; updateUI(); }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+});
+</script>
+</body>
+</html>
